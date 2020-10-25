@@ -1,0 +1,24 @@
+{
+  "name": "messenger-dapp-gui-prototype",
+  "version": "1.0.0",
+  "description": "Electron-based chat GUI",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/hsh-mpro-blockchain-ws20/messenger-dapp-gui-prototype.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/hsh-mpro-blockchain-ws20/messenger-dapp-gui-prototype/issues"
+  },
+  "homepage": "https://gitlab.com/hsh-mpro-blockchain-ws20/messenger-dapp-gui-prototype#readme",
+  "devDependencies": {
+    "electron": "^10.1.5"
+  }
+}
