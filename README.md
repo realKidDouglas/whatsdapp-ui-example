@@ -4,8 +4,14 @@ Electron-based chat GUI
 
 # Install
 
-	npm install electron
+	npm install
 	
 # Run
 
-	npm start
+	npm run dev
+
+# Sources
+
+Based on
+* https://github.com/pusher/electron-desktop-chat 
+* https://github.com/csepulv/electron-with-create-react-app
