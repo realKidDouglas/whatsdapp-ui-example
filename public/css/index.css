@@ -1,0 +1,27 @@
+.in-row {
+    display: flex;
+}
+
+.in-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.grey {
+    color: #7c7c7c;
+}
+
+.small-margin {
+    margin: 5px 5px 5px 5px;
+}
+
+.space-filling-msglist {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow-y: auto;
+}
+
+.flex-nogrow-noshrink {
+    flex-grow: 0;
+    flex-shrink: 0;
+}

@@ -10,8 +10,11 @@ Electron-based chat GUI
 
 	npm run dev
 
+	When you change code while the app is running, the app updates immediatly after saving.
+
 # Sources
 
 Based on
 * https://github.com/pusher/electron-desktop-chat 
 * https://github.com/csepulv/electron-with-create-react-app
+* https://github.com/connors/photon
