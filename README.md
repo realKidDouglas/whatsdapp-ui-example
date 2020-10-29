@@ -10,7 +10,8 @@ Electron-based chat GUI
 
 	npm run dev
 
-	When you change code while the app is running, the app updates immediatly after saving.
+When React code is changed while the app is running, the app updates immediatly after saving.
+Chrome Dev Tools can be opened by setting openDevTools = true in electron-starter.js
 
 # Sources
 

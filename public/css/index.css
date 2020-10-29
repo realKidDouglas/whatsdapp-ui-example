@@ -25,3 +25,7 @@
     flex-grow: 0;
     flex-shrink: 0;
 }
+
+.show-full-text {
+    white-space: normal;
+}

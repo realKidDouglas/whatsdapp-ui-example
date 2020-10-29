@@ -1,8 +1,12 @@
 import React, { Component } from 'react'
 
 class SendMessageForm extends Component {
-  state = {
-    text: ''
+  
+  constructor(props) {
+    super(props);
+    this.state = {
+      text: ''
+    }
   }
 
   onSubmit = e => {

@@ -5,6 +5,8 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
 const url = require('url');
 
+const openDevTools = false;
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -22,7 +24,7 @@ function createWindow() {
     mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools();
+    if(openDevTools) mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', function () {
         // Dereference the window object, usually you would store windows

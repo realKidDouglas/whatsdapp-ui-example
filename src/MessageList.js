@@ -9,12 +9,12 @@ class MessageList extends Component {
     this.scrollToBottom()
   }
   scrollToBottom = () => {
-    this.scrollHeight = this.messageListRef.scrollHeight;
-    this.height = this.messageListRef.clientHeight;
-    this.maxScrollTop = this.scrollHeight - this.height;
-    this.messageListRef.scrollTop = this.maxScrollTop > 0 ? this.maxScrollTop : 0;
+    let scrollHeight = this.messageListRef.scrollHeight;
+    let height = this.messageListRef.clientHeight;
+    let maxScrollTop = scrollHeight - height;
+    this.messageListRef.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
   }
-
+  
   render() {
     return (
       <ul className="list-group space-filling-msglist" ref={el => {this.messageListRef = el}}>
@@ -29,7 +29,7 @@ class MessageList extends Component {
     return (
       <li className="list-group-item">
           <strong>Username</strong><span className="pull-right grey">00:00</span>
-          <p className="selectable-text">{message}</p>
+          <p className="selectable-text show-full-text">{message}</p>
       </li>
     )
   }

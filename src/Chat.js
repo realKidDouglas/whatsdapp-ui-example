@@ -4,17 +4,21 @@ import SendMessageForm from './SendMessageForm'
 import ContactList from './ContactList'
 
 class Chat extends React.Component {
-    state = {
-      currentUser: null,
-      contacts: [],
-      messages: []
+
+    constructor(props) {
+      super(props)
+      this.state = {
+        currentUser: null,
+        contacts: [],
+        messages: []
+      }
     }
   
     componentDidMount() {
         this.setState({ //TODO: Geeignete Datenstruktur
             currentUser: "testUser",
             contacts: ["contact1", "contact2", "contact3"],
-            messages: ["message1", "message2", "message3", "message4", "message5"],
+            messages: ["message1", "message2", "message3", "message4", "message5", "dth fstjhsrjrtsj fxz jfszd  dtyil zgrl gho rugöouöhg lihug rgodhrg drhi godrhg osdhg oshg osdjgoi sej goisjg"],
             openedContact: null
         })
     }
@@ -41,7 +45,10 @@ class Chat extends React.Component {
               />
             </div>
             <div className="pane in-column">
-              <MessageList messages={this.state.messages} currentUser={this.state.currentUser} openedContact={this.state.openedContact}/>
+              <MessageList
+                messages={this.state.messages}
+                currentUser={this.state.currentUser}
+                openedContact={this.state.openedContact}/>
               <SendMessageForm onSend={this.onSend} />
             </div>
           </div>
