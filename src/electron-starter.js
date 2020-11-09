@@ -1,6 +1,7 @@
 const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
+const localshortcut = require('electron-localshortcut');
 
 const path = require('path');
 const url = require('url');
@@ -12,19 +13,19 @@ const openDevTools = false;
 let mainWindow;
 
 function createWindow() {
-    mainWindow = new BrowserWindow({width: 800, height: 600, webPreferences: { nodeIntegration: true }});
-
+    mainWindow = new BrowserWindow({width: 800, height: 600, webPreferences: {nodeIntegration: true}});
+    localshortcut.register(mainWindow, "F12", () => mainWindow.webContents.openDevTools())
     const startUrl = process.env.ELECTRON_START_URL || url.format({
-            pathname: path.join(__dirname, '/../build/index.html'),
-            protocol: 'file:',
-            slashes: true
-        });
+        pathname: path.join(__dirname, '/../build/index.html'),
+        protocol: 'file:',
+        slashes: true
+    });
     mainWindow.loadURL(startUrl);
 
     mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    if(openDevTools) mainWindow.webContents.openDevTools();
+    if (openDevTools) mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', function () {
         // Dereference the window object, usually you would store windows
