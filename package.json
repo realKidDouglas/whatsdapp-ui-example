@@ -8,9 +8,11 @@
     "react-scripts": "0.8.5"
   },
   "dependencies": {
+    "@types/fs-extra": "^9.0.3",
+    "electron-localshortcut": "3.2.1",
+    "fs-extra": "9.0.1",
     "react": "^16.1.1",
-    "react-dom": "^16.1.1",
-    "electron-localshortcut": "3.2.1"
+    "react-dom": "^16.1.1"
   },
   "homepage": "./",
   "main": "src/electron-starter.js",
