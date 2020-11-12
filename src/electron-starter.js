@@ -4,6 +4,8 @@ const BrowserWindow = electron.BrowserWindow;
 const localshortcut = require('electron-localshortcut');
 const path = require('path');
 const url = require('url');
+const conn = require('./node/dapi/Connection');
+const dapi_facade = require('./node/dapi/DAPI_Facade');
 
 //
 // ## Storage Example Code
@@ -57,6 +59,30 @@ try {
 
 //
 // ## end storage example code
+//
+
+//
+//dapi init
+//
+try {
+    let connection = {
+        platform: undefined,
+        identity: undefined,
+    }
+    const client = new conn.Connection();
+    async function init_connection(){
+        connection.platform = await client.platform;
+        connection.identity = await client.platform.identities.get('5Khbfz9f5LraZ9oQHbuauM1WW4V74fcmRmMGDpFC9kQP');
+    }
+    init_connection();
+
+    const dapi = new dapi_facade.DAPI_Facade()
+} catch (e) {
+    console.log("dapi init err: ", e)
+}
+
+//
+// end dapi
 //
 
 const enableDevTools = true;

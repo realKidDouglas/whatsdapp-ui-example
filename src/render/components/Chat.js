@@ -20,7 +20,7 @@ class Chat extends React.Component {
             openedContact: null
         })
     }
-  
+
     onSend = text => {
       //TODO: This is only clickdummy prototyping
         this.setState({messages: this.state.messages.concat(text)})
