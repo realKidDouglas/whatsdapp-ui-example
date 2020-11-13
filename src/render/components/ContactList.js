@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 
 class ContactList extends Component {
 
-  onContactOpened(user) {
-    this.props.setOpenedContact(user)
+  onContactOpened(contact) {
+    this.props.setOpenedContact(contact)
   }
 
   render() {
@@ -12,20 +12,21 @@ class ContactList extends Component {
         <li className="list-group-header">
           <input className="form-control" type="text" placeholder="Search for someone"/>
         </li>
-        {this.props.users.map((user, index) => {
-              return this.renderItem(user)
+        {this.props.contacts.map((contact, index) => {
+              return this.renderItem(contact)
             })}
       </ul>
-    )
+    );
   }
 
-  renderItem(user) {
+  renderItem(contact) {
     return (
-      <li className={user === this.props.openedContact ? "list-group-item active" : "list-group-item"} onClick={((e) => this.onContactOpened(user))}>
+      <li className={contact.handle === this.props.openedContact.handle ? "list-group-item active" : "list-group-item"}
+          onClick={((e) => this.onContactOpened(contact))}>
         <span className="icon icon-user pull-left media-object"/>
         <div>
-          <strong>{user}</strong>
-          <p>Preview letzte message</p>
+          <strong>{contact.handle}</strong>
+          <p>{this.props.handlesWithNewMessage.indexOf(contact.handle) > -1 ? "New message(s)..." : "No new message"}</p>
         </div>
       </li>
     )

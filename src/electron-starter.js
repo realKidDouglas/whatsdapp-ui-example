@@ -4,6 +4,7 @@ const BrowserWindow = electron.BrowserWindow;
 const localshortcut = require('electron-localshortcut');
 const path = require('path');
 const url = require('url');
+require('./node/guiHandler')
 
 
 //
