@@ -1,65 +1,16 @@
+const error = require('./node/error');
 const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const localshortcut = require('electron-localshortcut');
 const path = require('path');
 const url = require('url');
-require('./node/guiHandler')
 
+const WhatsDapp = require('./node/dapi/WhatsDapp');
+const messenger = new WhatsDapp();
+const ipcStart = require('./node/IPC');
+ipcStart(messenger);
 
-//
-// ## Storage Example Code
-//
-const identityId = "someIdentityId"
-let whatsDappStorage
-try {
-    const WhatsDappStorage = require('./node/storage/storage')
-    whatsDappStorage = new WhatsDappStorage({
-        password: 'password',
-        storagePath: path.join(app.getPath('userData'), 'whatsDappSessions')
-    })
-
-    const addMessagePeriodic = () => {
-        let resolve
-        const ret = new Promise(res => resolve = res)
-
-        let i = 0
-        const interval = setInterval(() => {
-            i++
-            // add messages with pretty much random offsets
-            const timestamp = Date.now() - Math.floor(Math.random() * 100000)
-            const msg = {timestamp, message: ("hello there! ").repeat(2) + timestamp}
-            whatsDappStorage.addMessageToSession(identityId, msg)
-
-            if (i > 10) {
-                console.log('stopping')
-                clearInterval(interval)
-                setTimeout(() => whatsDappStorage.printSession(identityId).then(resolve), 100)
-            }
-        }, 100)
-        return ret
-    }
-
-    const p = whatsDappStorage.getSessions()
-    p.then(sessions => {
-        if (sessions.length === 0) return whatsDappStorage.addSession(identityId, {keys: ["keyA", "keyB"]})
-        return Promise.resolve()
-    })
-        .then(addMessagePeriodic)
-        .then(() => {
-            // print 5 messages, starting from the newest one going back in time. this immediately
-            // returns an array of promises (not a promise of an array!)
-            // that will be resolved in order of the message time stamps.
-            whatsDappStorage.getPreviousMessages(identityId, undefined, 5)
-                .map(p => p.then(m => console.log(m)))
-        })
-} catch (e) {
-    console.log("storage init err: ", e)
-}
-
-//
-// ## end storage example code
-//
 
 const enableDevTools = true;
 

@@ -1,8 +1,11 @@
-const connection = require('./dapi/Connection');
-const dapiFacade = require('./dapi/DAPI_Facade');
+const connection = require('./Connection');
+const dapiFacade = require('./DAPI_Facade');
+const EventEmitter = require('events');
 
-class WhatsdappController {
+class WhatsDapp extends EventEmitter {
+
     constructor() {
+        super();
         this.dapi = new dapiFacade.DAPI_Facade();
         this.activeUser = undefined;
         this.messagesCache = [];
@@ -168,4 +171,4 @@ class WhatsdappController {
     }
 }
 
-module.exports.WhatsdappController = WhatsdappController;
+module.exports = WhatsDapp;
