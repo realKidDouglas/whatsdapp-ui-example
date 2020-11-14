@@ -1,4 +1,5 @@
 const fs = require('fs-extra')
+const path = require('path')
 const {MAP_FILE_NAME, SALT_FILE_NAME} = require('./constants')
 const {aesDecryptObject} = require('./crypt')
 
@@ -64,7 +65,7 @@ async function getMetaData(storagePath, key) {
             .filter(b => b != null)
             .reduce((r, o) => Object.assign(r, {[o.identityId]: {info: o.info, chunks: o.chunks}}), {})
     } catch (e) {
-        console.error("can't get metadata:", e)
+        console.log("can't get metadata:", e)
         return {}
     }
 }

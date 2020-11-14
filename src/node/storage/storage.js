@@ -38,6 +38,7 @@ function WhatsDappNodeStorage(opts) {
     this.initialized = Promise.resolve()
         .then(() => getMetaData(this._storagePath, this._key))
         .then(md => this._metadata = md)
+        .then(() => console.log("storage metadata:", this._metadata)) // TODO: remove.
         .catch(e => console.error('could not initialize whatsdapp storage:', e))
 
     // methods

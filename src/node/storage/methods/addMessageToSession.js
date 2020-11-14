@@ -8,7 +8,7 @@ const fs = require('fs-extra')
  * add a message to a session. messages are stored in a series of json files, that
  * each contain about maxHistFileSize bytes of encrypted messages.
  * @param identityId {string}
- * @param message {{timestamp: number, message: string}} in plain text
+ * @param message {{timestamp: number, message: any}} in plain text
  * @returns {Promise<void>}
  */
 module.exports = async function addMessageToSession(identityId, message) {

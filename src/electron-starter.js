@@ -6,16 +6,17 @@ const localshortcut = require('electron-localshortcut');
 const path = require('path');
 const url = require('url');
 
-const WhatsDapp = require('./node/dapi/WhatsDapp');
-const messenger = new WhatsDapp();
 const ipcStart = require('./node/IPC');
-ipcStart(messenger);
+const storagePath = path.join(app.getPath('userData'), 'whatsDappSessions')
 
 
 const enableDevTools = true;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
+/**
+ * @type {Electron.BrowserWindow}
+ */
 let mainWindow;
 
 function createWindow() {
@@ -43,6 +44,12 @@ function createWindow() {
         // when you should delete the corresponding element.
         mainWindow = null;
     })
+
+    mainWindow.once('ready-to-show', setUpIPC)
+}
+
+function setUpIPC() {
+    ipcStart({storagePath, window: mainWindow});
 }
 
 app.on('ready', createWindow);

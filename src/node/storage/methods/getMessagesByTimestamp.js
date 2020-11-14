@@ -33,6 +33,7 @@ module.exports = (older) => {
         : 1
 
     return function (identityId, timestamp = timestampDefault, limit = DEFAULT_MSG_COUNT) {
+        console.log("retrieve msg for", identityId)
         // prepare array of Promises that can be returned immediately
         const resolves = []
         const ret = []
@@ -56,7 +57,6 @@ module.exports = (older) => {
                 // read in chunk contents
                 const chunkPath = path.join(this._storagePath, hashId, i.toString())
                 const encChunk = await readJSON(chunkPath)
-                console.log("chnk", i)
                 // encChunk is an array of b64 encoded, encrypted message objects
                 const decChunk = encChunk.map(m => aesDecryptObject(Buffer.from(m, 'base64'), this._key))
                 reverser(decChunk).forEach(message => {
