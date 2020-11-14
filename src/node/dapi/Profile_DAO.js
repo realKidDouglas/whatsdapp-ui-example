@@ -1,7 +1,21 @@
+/**
+ * @author Panzerknacker, Mr. P
+ */
 class Profile_DAO {
-    constructor() {
-    }
 
+    /**
+     * Create a profile
+     * @param connection :{
+     *     identity: resolved identity by id
+     *     platform: Dash Platform object
+     * }
+     * @param content: {
+     *     ipk: "Signal Public Identity Key",
+     *     sipk: "Signal Signed Public Key",
+     *     pks: [<bundle of prekeys>]
+     * }
+     * @returns {Promise<*>}
+     */
     async create_profile(connection, content) {
         try {
             const doc_properties = {
@@ -27,6 +41,15 @@ class Profile_DAO {
 
     }
 
+    /**
+     * Create a WhatsDapp profile
+     * @param connection :{
+     *     identity: resolved identity by id
+     *     platform: Dash Platform object
+     * }
+     * @param ownerid - The ownerId in HEX
+     * @returns Returns a document, that the profile was created
+     */
     async get_profile(connection, ownerid){
         try{
             // Retrieve the existing document
@@ -42,10 +65,18 @@ class Profile_DAO {
         }
     }
 
-
-
-
-
+    /**
+     *
+     * @param connection :{
+     *     identity: resolved identity by id
+     *     platform: Dash Platform object
+     * }
+     * @param content: {
+     *     sipk: "Signal Signed Public Key",
+     *     pks: [<bundle of prekeys>]
+     * }
+     * @returns Returns a document, that the profile was updated
+     */
     async update_profile(connection, content){
         try{
             // Retrieve the existing document
@@ -64,7 +95,14 @@ class Profile_DAO {
         }
     }
 
-
+    /**
+     * Delte the WhatsDapp profile so noone can create a signal message.
+     * @param connection :{
+     *     identity: resolved identity by id
+     *     platform: Dash Platform object
+     * }
+     * @returns Returns a document, that the profile was updated
+     */
     async delete_profile(connection){
         try {
             // Retrieve the existing document
@@ -78,14 +116,7 @@ class Profile_DAO {
         } catch (e) {
             console.error('Something went wrong:', e);
         }
-
-
-
-
     }
-
-
-
 }
 
 

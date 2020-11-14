@@ -1,4 +1,4 @@
-const connection = require('./Connection');
+const client = require('./Client');
 const dapiFacade = require('./DAPI_Facade');
 const EventEmitter = require('events');
 
@@ -17,12 +17,13 @@ class WhatsDapp extends EventEmitter {
             //connection establishment etc
             //here just testing. Object formats are just rough drafts, can be improved
             this.activeUser = {
-                handle: "testUser",
-                identity: "xxx",
-                mnemonic: "x"
+                handle: "Robin",
+                identity: "94DgzdJ1D2RbRGSRfenFFLQaZxDERoRXbnTdX53p34VD",
+                mnemonic: "cheese ridge valve desk angry orphan deny program frame section match manage"
                 //whatever needs to be remembered about our current user
             };
-            
+
+
             this.loadChats();
             
             return {
@@ -37,11 +38,12 @@ class WhatsDapp extends EventEmitter {
     }
 
     loadChats() {
+
         //testing. Object formats are just rough drafts, can be improved
         this.messagesCache["robsenwhats"] = {
             messages: [
                 {
-                    senderHandle: "robsenwhats",
+                    senderHandle: "peniskopf",
                     timestamp: "13.11.2020 17:00",
                     content: "Dies ist eine alte Nachricht von robin"
                 },
@@ -72,6 +74,7 @@ class WhatsDapp extends EventEmitter {
     }
 
     sendMessage(receiver, message) {
+        console.log("asdsdsa");
         if(this.activeUser) {
             if(!this.messagesCache[receiver.handle]) { //initiate chat
                 this.messagesCache[receiver.handle] = {
