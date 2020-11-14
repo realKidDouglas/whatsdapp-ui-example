@@ -29,8 +29,15 @@ module.exports = function (messenger) {
         return messenger.getContacts();
     });
 
-    ipcMain.handle('loginUser', (event, user) => {
-        return messenger.loginUser(user);
+    ipcMain.handle('loginUser', (event, input) => {
+        let options = {
+            mnemonic: "permit crime brush cross space axis near uncle crush embark hill apology",
+            identity: "9hnTvxpxJKPefK7HKmnyBBYMYr3B9jDw94UwDJb1F7X2",
+            displayname: "robsenwhats"
+        }
+
+
+        return messenger.loginUser(options);
     });
 
     ipcMain.handle('logoutCurrentUser', (event) => {

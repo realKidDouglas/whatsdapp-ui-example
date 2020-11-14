@@ -1,4 +1,4 @@
-const client = require('./Client');
+const clientConnection = require('./Client');
 const dapiFacade = require('./DAPI_Facade');
 const EventEmitter = require('events');
 
@@ -10,29 +10,52 @@ class WhatsDapp extends EventEmitter {
         this.activeUser = undefined;
         this.messagesCache = [];
         this.contacts = [];
+        this.client = undefined;
+        this.connection = {
+            identity: undefined,
+            platform: undefined
+        }
     }
 
-    loginUser(user) {
+    async loginUser(options) {
         try {
-            //connection establishment etc
-            //here just testing. Object formats are just rough drafts, can be improved
-            this.activeUser = {
-                handle: "Robin",
-                identity: "94DgzdJ1D2RbRGSRfenFFLQaZxDERoRXbnTdX53p34VD",
-                mnemonic: "cheese ridge valve desk angry orphan deny program frame section match manage"
-                //whatever needs to be remembered about our current user
-            };
+            console.log(options);
+            this.client = new clientConnection.Client(options.mnemonic).client;
+            this.connection.platform = this.client.platform;
 
+            if(options.identity === undefined){
+                let id = await this.dapi.create_identity(this.connection);
+                options.identity = id.getId().toJSON()
+                console.log(options.identity);
+            }
+
+
+            this.connection.identity = await this.connection.platform.identities.get(options.identity);
+
+            let profile = await this.dapi.get_profile(this.connection, options.identity);
+            console.log(profile);
+
+            if(profile === undefined){
+                console.log("create new one");
+                let content = {
+                    identity_public_key: "Kommt später",
+                    signed_identity_public_key: "Kommt später",
+                    prekeys: ["kommt", "später"],
+                    displayname: options.displayname,
+                }
+                await this.dapi.create_profile(this.connection, content);
+                profile = await this.dapi.get_profile(this.connection, options.identity);
+            }
 
             this.loadChats();
-            
+            this.sendMessage("", "", "");
+
             return {
-                handle: this.activeUser.handle
-                //other parameters needed by UI?
+                handle: profile.data.displayname
             };
         }
-        catch {
-            //TODO: should UI get an error or is no return value enough to indicate a failed login?
+        catch(e) {
+            console.error('Something went wrong:', e);
             return undefined;
         }
     }
@@ -43,7 +66,7 @@ class WhatsDapp extends EventEmitter {
         this.messagesCache["robsenwhats"] = {
             messages: [
                 {
-                    senderHandle: "peniskopf",
+                    senderHandle: "philipwhats",
                     timestamp: "13.11.2020 17:00",
                     content: "Dies ist eine alte Nachricht von robin"
                 },
@@ -73,29 +96,26 @@ class WhatsDapp extends EventEmitter {
         this.contacts = [{ handle: "robsenwhats" }, { handle: "pippowhats"}, {handle: "testContactWithNoMessages"}];
     }
 
-    sendMessage(receiver, message) {
-        console.log("asdsdsa");
-        if(this.activeUser) {
-            if(!this.messagesCache[receiver.handle]) { //initiate chat
-                this.messagesCache[receiver.handle] = {
-                    messages: [],
-                    newMessages: 0
-                };
-            }
+    sendMessage(receiver, message, keybundle) {
+        // Hier kommt der Signalkram rein
 
-            this.messagesCache[receiver.handle].messages.push({
-                sender: this.activeUser.handle,
-                timestamp: new Date().toLocaleString(),
-                content: message
-            });
-            return true; //successfully sent
+
+
+        // Raus kommt verschlüsseltes messageobject.
+
+        if(this.activeUser) {
+            return this.dapi.create_message(this.connection, receiver, message);
         }
         else {
             return false; //no sending user defined
         }
     }
 
-    getContactsWithNewMessages() {
+    async getContactsWithNewMessages(time) {
+        let messages = await this.dapi.get_messages_by_time(this.connection, time);
+
+        //TODO: Hier muss die Logik rein, die den Sessions aus dem Store abgleicht.
+        /*
         this.fetchNewMessages();
 
         let returnContacts = [];
@@ -105,58 +125,16 @@ class WhatsDapp extends EventEmitter {
                     returnContacts.push(contact);
         });
         return returnContacts;
+
+         */
     }
 
-    getNewMessagesFrom(contact) {
-        this.fetchNewMessages();
-        
-        let newMessages = [];
-        if (this.messagesCache[contact.handle]) {
-            if (this.messagesCache[contact.handle].newMessages > 0) {
-                newMessages = this.messagesCache[contact.handle].messages.slice(
-                    this.messagesCache[contact.handle].messages.length -
-                    this.messagesCache[contact.handle].newMessages
-                );
-                this.messagesCache[contact.handle].newMessages = 0;
-            }
-        }
-        
-        return newMessages;
+    async getNewMessagesFrom(senderId) {
+        return await this.dapi.get_messages_from(this.connection, senderId);
     }
 
-    fetchNewMessages() {
-        //just testing. Object formats are just rough drafts, can be improved
-        let receivedMessages = [
-            {
-                senderHandle: "robsenwhats",
-                timestamp: "13.11.2020 18:01",
-                content: "Dies ist eine neue Nachricht von robin"
-            },
-            {
-                senderHandle: "robsenwhats",
-                timestamp: "13.11.2020 18:02",
-                content: "Dies ist noch eine neue Nachricht von robin"
-            },
-            {
-                senderHandle: "pippowhats",
-                timestamp: "13.11.2020 18:02",
-                content: "Dies ist eine neue Nachricht von philip"
-            }
-        ]
-        
-        receivedMessages.forEach(message => {
-            if(this.messagesCache[message.senderHandle]){
-                this.messagesCache[message.senderHandle].messages.push(message);
-                this.messagesCache[message.senderHandle].newMessages += 1;
-            } 
-            else {
-                this.messagesCache[message.senderHandle] = {
-                    messages: message,
-                    newMessages: 1
-                };
-                this.contacts.push({handle: message.senderHandle})
-            }
-        });
+    async fetchNewMessages(time) {
+        return await this.dapi.get_messages_by_time(this.connection, time);
     }
 
     getContacts() {

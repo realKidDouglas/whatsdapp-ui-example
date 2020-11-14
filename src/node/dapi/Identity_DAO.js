@@ -80,8 +80,6 @@ class Identity_DAO {
             console.error('Something went wrong:', e);
         }
     }
-
-
 }
 
 module.exports.Identity_DAO = Identity_DAO;
