@@ -1,6 +1,6 @@
+const Client = require('./Client').Client;
 const dapiFacade = new (require('./DAPI_Facade').DAPI_Facade)();
 const EventEmitter = require('events');
-const {Connection} = require("./Connection");
 
 const timeout = 5000
 
@@ -8,6 +8,10 @@ class WhatsDapp extends EventEmitter {
 
     constructor() {
         super();
+        this._connection = {
+            identity: null,
+            platform: null
+        }
 
     }
 
@@ -16,18 +20,40 @@ class WhatsDapp extends EventEmitter {
      * @returns {Promise<{handle:string}>}
      */
     async connect(opts) {
-        const {mnemonic, sessions} = opts;
+        let {mnemonic, sessions, identity, displayname} = opts;
+        this._client = new Client(mnemonic).client;
+        this._connection.platform = this._client.platform;
         this._sessions = sessions;
-        this._connection = new Connection(mnemonic);
+
+        if(identity == null) {
+            let id = await dapiFacade.create_identity(this._connection);
+            identity = id.getId().toJSON();
+            console.log(identity)
+        }
+
+        await this._connection.identity = await this._connection.platform.identities.get(identity);
+        let profile = await dapiFacade.get_profile(this._connection, identity);
+
+        if(profile == null) {
+            console.log("creating new profile!");
+            let content = {
+                identity_public_key: "Kommt später",
+                signed_identity_public_key: "Kommt später",
+                prekeys: ["kommt", "später"],
+                displayname: options.displayname,
+            };
+            await dapiFacade.create_profile(this._connection, content);
+            profile = await dapiFacade.get_profile(this._connection, identity);
+        }
 
         // deferred initialization
         this.initialized = Promise.resolve()
             .then(() => this._pollTimeout = setTimeout(() => this._poll(), timeout))
-            .then(() => this._connection.client.wallet.getAccount())
+            .then(() => this._client.wallet.getAccount())
             .then(acc => acc.isReady());
 
         // this is what is assigned to loggedInUser in App.js, not sure what else it expects
-        return {handle: "MegaNick"}
+        return {handle: displayname}
     }
 
     // poll is async, if we used an interval we might start a new poll before
@@ -49,7 +75,7 @@ class WhatsDapp extends EventEmitter {
 
         // TODO: remove. only here because storage doesn't know if it's
         // TODO: busy and breaks if new-message right after new-session
-        await new Promise(r=>setTimeout(r, 1000))
+        await new Promise(r => setTimeout(r, 1000))
 
         this.emit('new-message', {
             senderHandle: "robsenwhats",
@@ -68,7 +94,12 @@ class WhatsDapp extends EventEmitter {
      * @param message
      * @returns {Promise<boolean>}
      */
-    async sendMessage(receiver, message) {
+    async sendMessage(receiver, message /*, keybundle */) {
+
+        // TODO: Hier kommt der Signalkram rein -> enc msg
+        // TODO: keybundle soll der messenger sich selbst beschaffen,
+        // TODO: muss nicht als arg kommen.
+
         await this.initialized
         await dapiFacade.message_DAO.create_message(this._connection, receiver, content)
 

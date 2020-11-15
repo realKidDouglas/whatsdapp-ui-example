@@ -25,10 +25,12 @@ class App extends Component {
         // this is needed because immediate connect will occur
         // before the connect handler is bound on the node side
         await new Promise(r => setTimeout(r, 2000))
-        let user = await ipcRenderer.invoke(
-            'connect',
-            'universe tape brand silent use boring pattern submit camera tiny swing bring'
-        )
+        let options = {
+            mnemonic: "permit crime brush cross space axis near uncle crush embark hill apology",
+            identity: "9hnTvxpxJKPefK7HKmnyBBYMYr3B9jDw94UwDJb1F7X2",
+            displayname: "robsenwhats"
+        }
+        let user = await ipcRenderer.invoke('connect', options)
         console.log('user!', user)
         if (user) {
             this.setLoggedInUser(user)

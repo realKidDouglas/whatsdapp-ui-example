@@ -24,7 +24,8 @@ module.exports = function (opts) {
         window.webContents.send(message.toString(), args)
     }
 
-    async function handleConnect(evt, mnemonic) {
+    async function handleConnect(evt, options) {
+        const {mnemonic} = options
         storage = new WhatsDappNodeStorage({
             password: mnemonic,
             storagePath
@@ -46,7 +47,7 @@ module.exports = function (opts) {
             sendMessageToWebContents(window, 'new-message', [msg, session]);
         })
 
-        return messenger.connect({mnemonic, sessions: contacts});
+        return messenger.connect(Object.assign({}, options, {sessions: contacts}));
     }
 
     //login handling

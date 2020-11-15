@@ -3,6 +3,10 @@ const Profile_DAO = require('./Profile_DAO');
 const Identity_DAO = require('./Identity_DAO');
 const Wallet_DAO = require('./Wallet_DAO');
 
+/**
+ * Interface to the persitence dapi layer. Interact only with this class to use the dapi.
+ * @author: Panzerknacker, Mr. P
+ */
 class DAPI_Facade {
     constructor() {
         this.wallet_DAO = new Wallet_DAO.Wallet_DAO();
@@ -56,10 +60,13 @@ class DAPI_Facade {
         return this.message_DAO.get_messages_from(connection, receiverid);
     }
 
-    async get_messages(connection, senderid){
-        return this.message_DAO.get_messages(connection, senderid);
+    async get_messages(connection){
+        return this.message_DAO.get_messages(connection);
     }
 
+    async get_messages_by_time(connection, time){
+        return this.message_DAO.get_messages_by_time(connection, time);
+    }
 
     async delete_message(connection, messageid){
         return this.message_DAO.delete_message(connection, messageid);
