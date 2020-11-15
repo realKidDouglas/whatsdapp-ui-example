@@ -41,7 +41,6 @@ module.exports = function (opts) {
         })
 
         messenger.on('new-message', (msg, session) => {
-            console.log('new message', msg, session);
             storage.addMessageToSession(session.handle, msg)
                 .catch(e => console.log('add message fail:', e));
             sendMessageToWebContents(window, 'new-message', [msg, session]);

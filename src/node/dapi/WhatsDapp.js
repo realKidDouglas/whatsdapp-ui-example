@@ -1,6 +1,7 @@
 const Client = require('./Client').Client;
 const dapiFacade = new (require('./DAPI_Facade').DAPI_Facade)();
 const EventEmitter = require('events');
+const {createdAtToTimestamp} = require("./conversion");
 
 const pollInterval = 5000
 
@@ -46,6 +47,18 @@ class WhatsDapp extends EventEmitter {
             profile = await dapiFacade.get_profile(this._connection, identity);
         }
 
+        /*
+        const msg = await dapiFacade.get_messages_by_time(this._connection, 0)
+
+        for (let m in msg) {
+            const message = msg[m]
+            console.log(message)
+            await dapiFacade.delete_message(this._connection, message.id)
+        }
+
+        await dapiFacade.create_message(this._connection, identity, "holla, new msg? " + Date.now())
+        */
+
         this._profile = profile
 
         // deferred initialization
@@ -87,7 +100,7 @@ class WhatsDapp extends EventEmitter {
 
     async _broadcastNewMessage(rawMessage) {
         const ownerId = rawMessage.ownerId.toString();
-        const timestamp = Number(rawMessage.createdAt);
+        const timestamp = createdAtToTimestamp(rawMessage.createdAt);
 
         // TODO: put content through the signal lib
         const content = rawMessage.data.content;
@@ -137,15 +150,15 @@ class WhatsDapp extends EventEmitter {
         // TODO: muss nicht als arg kommen.
 
         await this.initialized
-        const rawMsg = await dapiFacade.create_message(this._connection, receiver, content)
+        const batch = await dapiFacade.create_message(this._connection, receiver, content)
+        const timestamp = createdAtToTimestamp(batch.transitions[0].createdAt)
 
-        console.log(rawMsg)
         // GUI listens to this, can then remove send-progressbar or w/e
         // storage also listens and will save the message.
         this.emit('new-message', {
-            senderId: this._connection.identity.toString(),
+            senderHandle: this._connection.identity.getId().toJSON(),
             content,
-            timestamp: Date.now() // TODO: does create_message return the message? maybe we can use that timestamp.
+            timestamp
         }, {handle: receiver})
     }
 

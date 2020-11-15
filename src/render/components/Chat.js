@@ -47,7 +47,7 @@ class Chat extends React.Component {
 
     }
 
-    onSend = async (text) => {
+    async onSend(text) {
         try {
             await ipcRenderer.invoke('sendMessage', this.state.activatedSession.handle, text);
         } catch (e) {
@@ -57,7 +57,7 @@ class Chat extends React.Component {
     }
 
     setActivatedSession = contact => {
-        if(this.state.activatedSession.handle === contact.handle) return;
+        if (this.state.activatedSession.handle === contact.handle) return;
         this.setState({activatedSession: contact})
         this.getChatHistory(contact)
     }
@@ -82,7 +82,7 @@ class Chat extends React.Component {
                     <MessageList
                         messages={this.state.messages}
                         loggedInUser={this.props.loggedInUser}/>
-                    <SendMessageForm onSend={this.onSend}/>
+                    <SendMessageForm onSend={(t) => this.onSend(t)}/>
                 </div>
             </div>
         )
