@@ -16,26 +16,19 @@ class Message_DAO {
      * @returns The check, that the message is published
      */
     async create_message(connection, receiverid, content) {
-        try {
-            const doc_properties = {
-                receiverid: receiverid,
-                content: content
-            }
-            // Create the message document
-            const message_document = await connection.platform.documents.create(
-                'message_contract.message',
-                connection.identity,
-                doc_properties,
-            );
+        const doc_properties = {receiverid, content}
+        // Create the message document
+        const message_document = await connection.platform.documents.create(
+            'message_contract.message',
+            connection.identity,
+            doc_properties,
+        );
 
-            const document_batch = {
-                create: [message_document],
-            }
-
-            return connection.platform.documents.broadcast(document_batch, connection.identity);
-        } catch (e) {
-            console.error('Something went wrong:', e);
+        const document_batch = {
+            create: [message_document],
         }
+
+        return connection.platform.documents.broadcast(document_batch, connection.identity);
     }
 
     /**
@@ -106,7 +99,7 @@ class Message_DAO {
      * @param time - Integer: Time in milliseconds
      * @returns {Promise<*>}
      */
-    async get_messages_by_time(connection, time){
+    async get_messages_by_time(connection, time) {
         try {
             const documents = await connection.platform.documents.get(
                 'message_contract.message',

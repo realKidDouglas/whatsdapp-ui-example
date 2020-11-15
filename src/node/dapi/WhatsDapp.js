@@ -46,6 +46,8 @@ class WhatsDapp extends EventEmitter {
             profile = await dapiFacade.get_profile(this._connection, identity);
         }
 
+        this._profile = profile
+
         // deferred initialization
         this.initialized = Promise.resolve()
             // .then(() => this._client.wallet.getAccount())
@@ -118,21 +120,26 @@ class WhatsDapp extends EventEmitter {
      * TODO: timeout and reject after some amount
      * TODO: of time and mark message for retry in GUI
      * @param receiver
-     * @param message
+     * @param content
      * @returns {Promise<boolean>}
      */
-    async sendMessage(receiver, message /*, keybundle */) {
+    async sendMessage(receiver, content /*, keybundle */) {
 
         // TODO: Hier kommt der Signalkram rein -> enc msg
         // TODO: keybundle soll der messenger sich selbst beschaffen,
         // TODO: muss nicht als arg kommen.
 
         await this.initialized
-        await dapiFacade.message_DAO.create_message(this._connection, receiver, content)
+        const rawMsg = await dapiFacade.create_message(this._connection, receiver, content)
 
+        console.log(rawMsg)
         // GUI listens to this, can then remove send-progressbar or w/e
         // storage also listens and will save the message.
-        this.emit('new-message', message, {handle: receiver})
+        this.emit('new-message', {
+            senderId: this._connection.identity.toString(),
+            content,
+            timestamp: Date.now() // TODO: does create_message return the message? maybe we can use that timestamp.
+        }, {handle: receiver})
     }
 
     getSessions() {

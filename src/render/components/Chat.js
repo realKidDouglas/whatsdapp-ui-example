@@ -48,16 +48,12 @@ class Chat extends React.Component {
     }
 
     onSend = async (text) => {
-        let msgSent = await ipcRenderer.invoke('sendMessage', this.state.activatedSession, text);
-        if (msgSent) {
-            this.setState({
-                messages: this.state.messages.concat([{
-                    senderHandle: this.props.loggedInUser.handle,
-                    timestamp: new Date().toLocaleString(),
-                    content: text
-                }])
-            })
-        } else console.error("Could not send message")
+        try {
+            await ipcRenderer.invoke('sendMessage', this.state.activatedSession.handle, text);
+        } catch (e) {
+            console.log("Could not send message", e)
+        }
+        // we will get a new-message event from the messenger as soon as the msg is sent.
     }
 
     setActivatedSession = contact => {
@@ -66,7 +62,7 @@ class Chat extends React.Component {
     }
 
     async getChatHistory(contact) {
-        let history = await ipcRenderer.invoke('getChatHistoryOf', contact);
+        let history = await ipcRenderer.invoke('get-chat-history', contact);
         this.setState({messages: history});
     }
 

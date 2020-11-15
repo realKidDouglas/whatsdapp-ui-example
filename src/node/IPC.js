@@ -63,15 +63,11 @@ module.exports = function (opts) {
     ipcMain.handle('disconnect', () => messenger.disconnect());
 
     //message handling
-    ipcMain.handle('sendMessage', (event, receiver, message) => {
-        return messenger.sendMessage(receiver, message);
+    ipcMain.handle('sendMessage', (event, receiver, content) => {
+        return messenger.sendMessage(receiver, content);
     });
 
-    ipcMain.handle('newMessagesAvailable', (event) => {
-        return messenger.getContactsWithNewMessages();
-    });
-
-    ipcMain.handle('getChatHistoryOf', async (event, contact) => {
+    ipcMain.handle('get-chat-history', async (event, contact) => {
         // TODO: make more args available, getPreviousMessages
         // TODO: can be used to get any part of the history.
         const msg = await Promise.all(storage.getPreviousMessages(contact.handle));
