@@ -57,6 +57,7 @@ class Chat extends React.Component {
     }
 
     setActivatedSession = contact => {
+        if(this.state.activatedSession.handle === contact.handle) return;
         this.setState({activatedSession: contact})
         this.getChatHistory(contact)
     }

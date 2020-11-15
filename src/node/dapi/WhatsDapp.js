@@ -69,11 +69,18 @@ class WhatsDapp extends EventEmitter {
 
         // TODO: it should be possible to do this per session / chat partner.
         const messages = await dapiFacade.get_messages_by_time(this._connection, pollTime)
-        const messagePromises = messages.map(
-            m => this._broadcastNewMessage(m)
-                .catch(() => console.log('failed to broadcast message:', m))
-        )
-        await Promise.all(messagePromises);
+
+        // TODO: replace with Promise.all() so the storage/gui can
+        // TODO: manage their throttling themselves.
+        for (let key in messages) {
+            const m = messages[key]
+            try {
+                await this._broadcastNewMessage(m)
+            } catch (e) {
+                console.log('failed to broadcast message:', m, e)
+            }
+            await new Promise(r => setTimeout(r, 150))
+        }
 
         this._pollTimeout = setTimeout(() => this._poll(), pollInterval)
     }
