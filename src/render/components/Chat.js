@@ -10,9 +10,9 @@ class Chat extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            contacts: [],
+            sessions: [],
             handlesWithNewMessage: [],
-            activatedContact: {handle: null},
+            activatedSession: {handle: null},
             messages: [] //only the message history with activated contact
         }
     }
@@ -26,29 +26,29 @@ class Chat extends React.Component {
     }
 
     async loadContacts() {
-        const contacts = await ipcRenderer.invoke('getContacts');
-        this.setState({contacts: contacts})
+        const sessions = await ipcRenderer.invoke('get-sessions');
+        this.setState({sessions: sessions})
     }
 
     async handleNewMessage(args) {
         const [msg, session] = args
-        if (!this.state.contacts.map(c => c.handle).includes(session.handle)) {
+        if (!this.state.sessions.map(s => s.handle).includes(session.handle)) {
             console.log('session new!', session);
-            this.setState({contacts: this.state.contacts.concat([session])});
+            this.setState({sessions: this.state.sessions.concat([session])});
         }
 
-        let contactsTmp = this.state.handlesWithNewMessage.concat([session.handle]);
-        this.setState({handlesWithNewMessage: contactsTmp});
+        const tmpSes = this.state.handlesWithNewMessage.concat([session.handle]);
+        this.setState({handlesWithNewMessage: tmpSes});
 
         // if the active contact is the one that sent the msg
-        if (contactsTmp.indexOf(this.state.activatedContact.handle) > -1) {
+        if (tmpSes.indexOf(this.state.activatedSession.handle) > -1) {
             this.setState({messages: this.state.messages.concat(msg)});
         }
 
     }
 
     onSend = async (text) => {
-        let msgSent = await ipcRenderer.invoke('sendMessage', this.state.activatedContact, text);
+        let msgSent = await ipcRenderer.invoke('sendMessage', this.state.activatedSession, text);
         if (msgSent) {
             this.setState({
                 messages: this.state.messages.concat([{
@@ -60,8 +60,8 @@ class Chat extends React.Component {
         } else console.error("Could not send message")
     }
 
-    setActivatedContact = contact => {
-        this.setState({activatedContact: contact})
+    setActivatedSession = contact => {
+        this.setState({activatedSession: contact})
         this.getChatHistory(contact)
     }
 
@@ -75,9 +75,9 @@ class Chat extends React.Component {
             <div className="pane-group">
                 <div className="pane pane-sm sidebar">
                     <ContactList
-                        contacts={this.state.contacts}
-                        openedContact={this.state.activatedContact}
-                        setOpenedContact={this.setActivatedContact}
+                        sessions={this.state.sessions}
+                        openedContact={this.state.activatedSession}
+                        setOpenedContact={this.setActivatedSession}
                         handlesWithNewMessage={this.state.handlesWithNewMessage}
                     />
                 </div>

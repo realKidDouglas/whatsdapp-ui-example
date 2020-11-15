@@ -2,8 +2,8 @@ import React, {Component} from 'react'
 
 class ContactList extends Component {
 
-    onContactOpened(contact) {
-        this.props.setOpenedContact(contact)
+    onContactOpened(session) {
+        this.props.setOpenedContact(session)
     }
 
     render() {
@@ -12,23 +12,23 @@ class ContactList extends Component {
                 <li className="list-group-header">
                     <input className="form-control" type="text" placeholder="Search for someone"/>
                 </li>
-                {this.props.contacts.map((contact, index) => {
+                {this.props.sessions.map((contact, index) => {
                     return this.renderItem(contact, index)
                 })}
             </ul>
         );
     }
 
-    renderItem(contact, index) {
+    renderItem(session, index) {
         // TODO: don't use index as key, might break if order changes.
         return (
             <li key={index}
-                className={contact.handle === this.props.openedContact.handle ? "list-group-item active" : "list-group-item"}
-                onClick={((e) => this.onContactOpened(contact))}>
+                className={session.handle === this.props.openedContact.handle ? "list-group-item active" : "list-group-item"}
+                onClick={((e) => this.onContactOpened(session))}>
                 <span className="icon icon-user pull-left media-object"/>
                 <div>
-                    <strong>{contact.handle}</strong>
-                    <p>{this.props.handlesWithNewMessage.indexOf(contact.handle) > -1 ? "New message(s)..." : "No new message"}</p>
+                    <strong>{session.handle}</strong>
+                    <p>{this.props.handlesWithNewMessage.indexOf(session.handle) > -1 ? "New message(s)..." : "No new message"}</p>
                 </div>
             </li>
         )

@@ -52,9 +52,9 @@ module.exports = function (opts) {
 
     //login handling
 
-    ipcMain.handle('getContacts', async (event) => {
+    ipcMain.handle('get-sessions', async (event) => {
         const s = await messenger.getSessions()
-        console.log("getContacts", s)
+        console.log("get-sessions", s)
         return s
     });
 
