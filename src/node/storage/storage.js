@@ -33,6 +33,7 @@ function WhatsDappNodeStorage(opts) {
     this._storagePath = storagePath
     this._salt = getSalt(storagePath)
     this._key = getKey(password, this._salt)
+    this._pendingRequests = []
 
     // deferred initialization
     this.initialized = Promise.resolve()
@@ -78,6 +79,22 @@ function WhatsDappNodeStorage(opts) {
     this._saveMetaData = require('./methods/saveMetaData.js')
     this._insertMessageToChunk = require('./methods/insertMessageToChunk.js')
     this._reorganizeHistory = require('./methods/reorganizeHistory.js')
+
+    // start event loop
+    const handleRequests = async () => {
+        while (this._pendingRequests.length > 0) {
+            await this._pendingRequests[0]()
+            this._pendingRequests.shift()
+        }
+        return 0
+    }
+
+    handleRequests().catch(e => {
+        console.log('storage handleRequest failed:', e)
+        return 10
+    }).then(n => {
+        setTimeout(() => handleRequests(), n * 1000)
+    })
 }
 
 

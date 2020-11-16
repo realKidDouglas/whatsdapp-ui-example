@@ -10,17 +10,26 @@ const path = require('path')
  */
 module.exports = async function addSession(identityId, info) {
     await this.initialized
-    console.log("adding session!")
-    // update in-memory metadata store
-    this._metadata[identityId] = {
-        chunks: [0], // the first file contains all messages from unix epoch
-        info: info, // the session keys (signal)
-    }
-    // create first hist file (empty)
-    const idHash = getIdentityIDHash(identityId, this._salt)
-    const histPath = path.join(this._storagePath, idHash, "0")
-    await outputJSON(histPath, [])
+    let resolve
+    const p = new Promise(r => resolve = r)
 
-    // save to disk
-    return this._saveMetaData(identityId, idHash)
+    const handler = async (identityId, info) => {
+        console.log("adding session!")
+        // update in-memory metadata store
+        this._metadata[identityId] = {
+            chunks: [0], // the first file contains all messages from unix epoch
+            info: info, // the session keys (signal)
+        }
+        // create first hist file (empty)
+        const idHash = getIdentityIDHash(identityId, this._salt)
+        const histPath = path.join(this._storagePath, idHash, "0")
+        await outputJSON(histPath, [])
+
+        // save to disk
+        await this._saveMetaData(identityId, idHash)
+        resolve()
+    }
+
+    this._pendingRequests.push(() => handler(identityId, info))
+    return p
 }

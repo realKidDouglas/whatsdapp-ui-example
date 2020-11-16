@@ -47,23 +47,7 @@ class WhatsDapp extends EventEmitter {
             profile = await dapiFacade.get_profile(this._connection, identity);
         }
 
-
-
-        /*
-        const msg = await dapiFacade.get_messages_by_time(this._connection, 0)
-
-        for (let m in msg) {
-            const message = msg[m]
-            console.log(message)
-            await dapiFacade.delete_message(this._connection, message.id)
-        }
-
-        await dapiFacade.create_message(this._connection, identity, "holla, new msg? " + Date.now())
-        */
-
         this._profile = profile
-
-
 
         // deferred initialization
         this.initialized = Promise.resolve()
@@ -89,15 +73,9 @@ class WhatsDapp extends EventEmitter {
 
         // TODO: replace with Promise.all() so the storage/gui can
         // TODO: manage their throttling themselves.
-        for (let key in messages) {
-            const m = messages[key]
-            try {
-                await this._broadcastNewMessage(m)
-            } catch (e) {
-                console.log('failed to broadcast message:', m, e)
-            }
-            await new Promise(r => setTimeout(r, 150))
-        }
+        const messagePromises = messages.map(m => this._broadcastNewMessage(m))
+
+        await Promise.all(messagePromises)
 
         this._pollTimeout = setTimeout(() => this._poll(), pollInterval)
     }
