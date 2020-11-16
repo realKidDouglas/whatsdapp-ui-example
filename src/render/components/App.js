@@ -17,27 +17,7 @@ class App extends Component {
     }
 
     //only for testing until login component is finished
-    componentDidMount() {
-        this.loginTestUser()
-    }
-
-    async loginTestUser() {
-        // this is needed because immediate connect will occur
-        // before the connect handler is bound on the node side
-        await new Promise(r => setTimeout(r, 1000))
-        let options = {
-            mnemonic: "permit crime brush cross space axis near uncle crush embark hill apology",
-            identity: "9hnTvxpxJKPefK7HKmnyBBYMYr3B9jDw94UwDJb1F7X2",
-            displayname: "robsenwhats"
-        }
-        let user = await ipcRenderer.invoke('connect', options)
-        console.log('user!', user)
-        if (user) {
-            this.setLoggedInUser(user)
-        } else {
-            console.error("Log in of test user failed")
-        }
-    }
+    
 
 
     render() {

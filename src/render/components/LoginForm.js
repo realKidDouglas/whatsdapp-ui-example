@@ -1,30 +1,86 @@
 import React from 'react'
+const {ipcRenderer} = window.require('electron');
 
 class LoginForm extends React.Component {
 
     constructor(props) {
       super(props)
       this.state = {
-        identity: '', 
+         
         identity1: '',
-        identityConfirmation: null,
-        signinError: ''
+        signinError: '',
+        loggedInUser: undefined,
+        mnemonic: '',
+        identity: '',
+        displayname: '',
       }
+      
+
       this.clickHandler = this.clickHandler.bind(this)
     }
 
-    onSubmit = e => {
-        e.preventDefault()
-        
-        this.props.setLoggedInUser(this.state.identity) // nur als Beispiel wie man das Userobjekt zu App hochreicht beim Submit der Form
-    }
+    handleMnemonicChange = event => {
+      this.setState({
 
-    onChange = e => {
-      this.setState({ identity: e.target.value })
-      if (this.props.onChange) {
-        this.props.onChange()
+       mnemonic: event.target.value
+     } )
+      // changing mnemonic value
+     }
+
+
+      handleIdentityChange = event => {
+      this.setState({
+      
+        identity: event.target.value
+      })
+      // changing identity value
+     }
+
+     handleDisplayNameChange = event => {
+      this.setState({
+      
+        displayname: event.target.value
+      })
+      // changing displayname value
+     }
+
+    
+    onSubmit = e => {
+      
+      e.preventDefault()
+      
+      this.loginTestUser()
+    
+       // nur als Beispiel wie man das Userobjekt zu App hochreicht beim Submit der Form
+  }
+   
+
+
+  async loginTestUser() {
+      // this is needed because immediate connect will occur
+      // before the connect handler is bound on the node side
+      await new Promise(r => setTimeout(r, 1000))
+      let options = {
+          mnemonic: "permit crime brush cross space axis near uncle crush embark hill apology",
+          identity: "9hnTvxpxJKPefK7HKmnyBBYMYr3B9jDw94UwDJb1F7X2",
+          displayname: "robsenwhats"
       }
-    }
+      let user = await ipcRenderer.invoke('connect', options)
+      console.log('user!', user)
+      if (user) {
+        this.props.setLoggedInUser(this.state.mnemonic)
+        this.props.setLoggedInUser(this.state.identity)
+        this.props.setLoggedInUser(this.state.displayname)
+        this.setLoggedInUser(user)
+        
+      } else {
+          console.error("Log in of test user failed")
+      }
+  }
+
+   
+
+  
 
     clickHandler() {
 
@@ -41,8 +97,15 @@ class LoginForm extends React.Component {
         <form onSubmit={(e) => this.onSubmit(e)}  >
   
           <button type="submit" className="btn btn-large btn-primary" >Log in</button>
-          <input type="password" className="form-control small-margin" placeholder="enter your mnemonic" onChange={this.onChange} value={this.state.identity}/>
-
+          <div>
+          <input type="text" className="form-control small-margin" placeholder="enter your mnemonic" value={this.state.mnemonic} onChange={this.handleMnemonicChange} />
+          </div>
+          <div>
+          <input type="text" className="form-control small-margin" placeholder="enter your identity" value={this.state.identity} onChange={this.handleIdentityChange} />
+          </div>
+          <div>
+          <input type="text" className="form-control small-margin" placeholder="enter your displayname" value={this.state.displayname} onChange={this.handleDisplayNameChange} />
+          </div>
 
             <div>
               <button onClick={ () => this.clickHandler()} type="submit" className="btn btn-primary">or create one!</button>
