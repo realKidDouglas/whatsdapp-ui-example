@@ -13,7 +13,7 @@ Electron-based chat GUI
 
 When React code is changed while the app is running, the app updates immediatly after saving.
 
-Chrome Dev Tools can be opened by setting openDevTools = true in electron-starter.js
+Chrome Dev Tools can be opened by pressing F12 (check if enableDevTools = true in electron-starter.js).
 
 # Sources
 

@@ -50,7 +50,6 @@ class LoginForm extends React.Component {
       identity: this.state.identity,
       displayname: this.state.displayname
     }
-    console.log(options)
     let user = await ipcRenderer.invoke('connect', options)
     if (user) {
       this.props.setLoggedInUser(user)

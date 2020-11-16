@@ -40,7 +40,7 @@ class MessageList extends Component {
     return (
       <li key={message.timestamp} className="list-group-item">
           <strong>{message.senderHandle + (message.senderHandle === this.props.loggedInUser.handle ? " (You)" : "")}</strong>
-          <span className="pull-right grey">{message.timestamp}</span>
+          <span className="pull-right grey">{new Date(message.timestamp).toLocaleString()}</span>
           <p className="selectable-text show-full-text">{message.content}</p>
       </li>
     )
