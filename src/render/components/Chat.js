@@ -4,6 +4,7 @@ import SendMessageForm from './SendMessageForm'
 import ContactList from './ContactList'
 
 const {ipcRenderer} = window.require('electron');
+const sortByTime = (a, b) => a.timestamp - b.timestamp;
 
 class Chat extends React.Component {
 
@@ -42,7 +43,10 @@ class Chat extends React.Component {
 
         // if the active contact is the one that sent the msg
         if (tmpSes.indexOf(this.state.activatedSession.handle) > -1) {
-            this.setState({messages: this.state.messages.concat(msg)});
+            const newMessagesArray = this.state.messages
+                .concat(msg)
+                .sort(sortByTime)
+            this.setState({messages: newMessagesArray});
         }
 
     }
@@ -64,7 +68,7 @@ class Chat extends React.Component {
 
     async getChatHistory(contact) {
         let history = await ipcRenderer.invoke('get-chat-history', contact);
-        this.setState({messages: history});
+        this.setState({messages: history.sort(sortByTime)});
     }
 
     render() {

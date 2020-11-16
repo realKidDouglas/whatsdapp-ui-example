@@ -82,6 +82,7 @@ function WhatsDappNodeStorage(opts) {
 
     // start event loop
     const handleRequests = async () => {
+        await this.initialized
         while (this._pendingRequests.length > 0) {
             await this._pendingRequests[0]()
             this._pendingRequests.shift()
@@ -89,12 +90,13 @@ function WhatsDappNodeStorage(opts) {
         return 0
     }
 
-    handleRequests().catch(e => {
+    const onerr = e => {
         console.log('storage handleRequest failed:', e)
         return 10
-    }).then(n => {
-        setTimeout(() => handleRequests(), n * 1000)
-    })
+    }
+
+    const repeat = n => setTimeout(() => handleRequests().catch(onerr).then(repeat), n * 1000)
+    handleRequests().catch(onerr).then(repeat)
 }
 
 

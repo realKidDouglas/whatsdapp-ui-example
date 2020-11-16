@@ -1,7 +1,7 @@
 const Client = require('./Client').Client;
 const dapiFacade = new (require('./DAPI_Facade').DAPI_Facade)();
 const EventEmitter = require('events');
-const {createdAtToTimestamp} = require("./conversion");
+const {rawMessageToMessage, transitionToMessage} = require("./conversion");
 
 const pollInterval = 5000
 
@@ -71,9 +71,8 @@ class WhatsDapp extends EventEmitter {
         // TODO: it should be possible to do this per session / chat partner.
         const messages = await dapiFacade.get_messages_by_time(this._connection, pollTime)
 
-        // TODO: replace with Promise.all() so the storage/gui can
-        // TODO: manage their throttling themselves.
-        const messagePromises = messages.map(m => this._broadcastNewMessage(m))
+        const messagePromises = messages.map(m => this._broadcastNewMessage(m).catch(e => console.log('broadcast failed!', e)))
+        console.log('got', messagePromises.length, 'new messages.')
 
         await Promise.all(messagePromises)
 
@@ -81,26 +80,10 @@ class WhatsDapp extends EventEmitter {
     }
 
     async _broadcastNewMessage(rawMessage) {
-        const ownerId = rawMessage.ownerId.toString();
-        const timestamp = createdAtToTimestamp(rawMessage.createdAt);
-
-        // TODO: put content through the signal lib
-        const content = rawMessage.data.content;
-        // TODO: get senderHandle from (some) public profile!
-        const senderHandle = ownerId;
-
-        // make sure we have the sender in our sessions
-        const session = await this._getOrCreateSession(ownerId, senderHandle);
-        // TODO: remove. only here because storage doesn't know if it's
-        // TODO: busy and breaks if new-message comes right after new-session
-        await new Promise(r => setTimeout(r, 1000));
-
-        this.emit('new-message', {content, timestamp, senderHandle}, session);
-
-        // TODO: this probably misses some messages?
-        // TODO: intention is to set next poll up for right after
-        // TODO: the newest message
-        this._lastPollTime = Math.min(this._lastPollTime, timestamp + 1);
+        const message = rawMessageToMessage(rawMessage)
+        const session = await this._getOrCreateSession(message.ownerId, message.senderHandle);
+        this.emit('new-message', message, session);
+        this._lastPollTime = Math.max(this._lastPollTime, message.timestamp + 1);
     }
 
     async _getOrCreateSession(ownerId, senderHandle) {
@@ -133,15 +116,11 @@ class WhatsDapp extends EventEmitter {
 
         await this.initialized
         const batch = await dapiFacade.create_message(this._connection, receiver, content)
-        const timestamp = createdAtToTimestamp(batch.transitions[0].createdAt)
+        const message = transitionToMessage(batch.transitions[0], this._connection.identity)
 
         // GUI listens to this, can then remove send-progressbar or w/e
         // storage also listens and will save the message.
-        this.emit('new-message', {
-            senderHandle: this._connection.identity.getId().toJSON(),
-            content,
-            timestamp
-        }, {handle: receiver})
+        this.emit('new-message', message, {handle: receiver})
     }
 
     getSessions() {
