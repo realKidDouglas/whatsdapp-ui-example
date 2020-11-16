@@ -2,8 +2,6 @@ import React, {Component} from 'react';
 import Chat from './Chat';
 import LoginForm from './LoginForm';
 
-const {ipcRenderer} = window.require('electron');
-
 class App extends Component {
     constructor(props) {
         super(props)
@@ -16,10 +14,6 @@ class App extends Component {
         this.setState({loggedInUser: user})
     }
 
-    //only for testing until login component is finished
-    
-
-
     render() {
         if (this.state.loggedInUser) {
             return (
@@ -30,7 +24,7 @@ class App extends Component {
         } else {
             return (
                 <div className="window-content">
-                    <LoginForm loggedInUser={this.state.loggedInUser} setLoggedInUser={this.setLoggedInUser}/>
+                    <LoginForm setLoggedInUser={this.setLoggedInUser}/>
                 </div>
             )
         }

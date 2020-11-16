@@ -3,119 +3,86 @@ const {ipcRenderer} = window.require('electron');
 
 class LoginForm extends React.Component {
 
-    constructor(props) {
-      super(props)
-      this.state = {
-         
-        identity1: '',
-        signinError: '',
-        loggedInUser: undefined,
-        mnemonic: '',
-        identity: '',
-        displayname: '',
-      }
-      
-
-      this.clickHandler = this.clickHandler.bind(this)
+  constructor(props) {
+    super(props)
+    this.state = {
+      mnemonic: '',
+      identity: '',
+      displayname: '',
     }
-
-    handleMnemonicChange = event => {
-      this.setState({
-
-       mnemonic: event.target.value
-     } )
-      // changing mnemonic value
-     }
-
-
-      handleIdentityChange = event => {
-      this.setState({
-      
-        identity: event.target.value
-      })
-      // changing identity value
-     }
-
-     handleDisplayNameChange = event => {
-      this.setState({
-      
-        displayname: event.target.value
-      })
-      // changing displayname value
-     }
-
-    
-    onSubmit = e => {
-      
-      e.preventDefault()
-      
-      this.loginTestUser()
-    
-       // nur als Beispiel wie man das Userobjekt zu App hochreicht beim Submit der Form
-  }
-   
-
-
-  async loginTestUser() {
-      // this is needed because immediate connect will occur
-      // before the connect handler is bound on the node side
-      await new Promise(r => setTimeout(r, 1000))
-      let options = {
-          mnemonic: "permit crime brush cross space axis near uncle crush embark hill apology",
-          identity: "9hnTvxpxJKPefK7HKmnyBBYMYr3B9jDw94UwDJb1F7X2",
-          displayname: "robsenwhats"
-      }
-      let user = await ipcRenderer.invoke('connect', options)
-      console.log('user!', user)
-      if (user) {
-        this.props.setLoggedInUser(this.state.mnemonic)
-        this.props.setLoggedInUser(this.state.identity)
-        this.props.setLoggedInUser(this.state.displayname)
-        this.setLoggedInUser(user)
-        
-      } else {
-          console.error("Log in of test user failed")
-      }
   }
 
-   
+  handleMnemonicChange = event => {
+    this.setState({
+      mnemonic: event.target.value
+    })
+  }
 
-  
+  handleIdentityChange = event => {
+    this.setState({
+      identity: event.target.value
+    })
+  }
 
-    clickHandler() {
+  handleDisplayNameChange = event => {
+    this.setState({
+      displayname: event.target.value
+    })
+  }
 
-      this.setState({
+  onLogin = e => {
+    e.preventDefault()
+    
+    this.loginUser();
+  }
 
-        identity1: 'must show up here the generated mnemonic'
-      })
+  async loginUser() {
+    // this is needed because immediate connect will occur
+    // before the connect handler is bound on the node side
+    //await new Promise(r => setTimeout(r, 1000))
+
+    let options = {
+      // Test user data:
+      // mnemonic: "permit crime brush cross space axis near uncle crush embark hill apology",
+      // identity: "9hnTvxpxJKPefK7HKmnyBBYMYr3B9jDw94UwDJb1F7X2",
+      // displayname: "robsenwhats"
+      mnemonic: this.state.mnemonic,
+      identity: this.state.identity,
+      displayname: this.state.displayname
     }
-  
-    render() {
-      return (
-        
-        
-        <form onSubmit={(e) => this.onSubmit(e)}  >
-  
-          <button type="submit" className="btn btn-large btn-primary" >Log in</button>
-          <div>
-          <input type="text" className="form-control small-margin" placeholder="enter your mnemonic" value={this.state.mnemonic} onChange={this.handleMnemonicChange} />
-          </div>
-          <div>
-          <input type="text" className="form-control small-margin" placeholder="enter your identity" value={this.state.identity} onChange={this.handleIdentityChange} />
-          </div>
-          <div>
-          <input type="text" className="form-control small-margin" placeholder="enter your displayname" value={this.state.displayname} onChange={this.handleDisplayNameChange} />
-          </div>
+    console.log(options)
+    let user = await ipcRenderer.invoke('connect', options)
+    if (user) {
+      this.props.setLoggedInUser(user)
+    } else {
+      console.error("Log in of user failed")
+    }
+  }
 
-            <div>
-              <button onClick={ () => this.clickHandler()} type="submit" className="btn btn-primary">or create one!</button>
-              <div>{this.state.identity1}</div>
-              </div>
-          
-          
+  render() {
+    return (
+      <div className="login-container padded">
+        <form onSubmit={this.onLogin}  className="">
+          <h1 className="text-center">Log in!</h1>
+          <div className="form-group">
+            <label>Wallet mnemonic</label>
+            <input type="text" className="form-control" placeholder="enter your mnemonic" value={this.state.mnemonic} onChange={this.handleMnemonicChange} />
+          </div>
+          <div className="form-group">
+            <label>Identity</label>
+            <input type="text" className="form-control" placeholder="enter your identity" value={this.state.identity} onChange={this.handleIdentityChange} />
+          </div>
+          <div className="form-group">
+            <label>Username</label>
+            <input type="text" className="form-control" placeholder="enter your displayname" value={this.state.displayname} onChange={this.handleDisplayNameChange} />
+          </div>
+          <div className="form-actions">
+            <button type="submit" className="btn btn-large btn-primary">Log in</button>
+          </div>
         </form>
-      )
-    }
+      </div>
+    )
   }
-  
-  export default LoginForm
+}
+
+export default LoginForm
