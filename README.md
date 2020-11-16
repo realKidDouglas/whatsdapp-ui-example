@@ -5,6 +5,7 @@ Electron-based chat GUI
 # Install
 
 	npm install
+	npm install grpc --runtime=electron --target=v10.1.4
 	
 # Run
 
