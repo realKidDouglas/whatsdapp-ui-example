@@ -47,6 +47,8 @@ class WhatsDapp extends EventEmitter {
             profile = await dapiFacade.get_profile(this._connection, identity);
         }
 
+
+
         /*
         const msg = await dapiFacade.get_messages_by_time(this._connection, 0)
 
@@ -60,6 +62,8 @@ class WhatsDapp extends EventEmitter {
         */
 
         this._profile = profile
+
+
 
         // deferred initialization
         this.initialized = Promise.resolve()
@@ -169,6 +173,36 @@ class WhatsDapp extends EventEmitter {
     disconnect() {
         clearTimeout(this._pollTimeout)
         this._pollTimeout = null
+    }
+
+    async getProfileByName(name){
+        let dpnsName = name + ".dash";
+
+
+        let dpnsContract = await dapiFacade.find_identity_by_name(this._connection, dpnsName);
+        if(dpnsContract == null){
+            console.log("no identity found for " + name);
+            return null;
+        }
+
+        let profileContract = await dapiFacade.get_profile(this._connection, dpnsContract.ownerId);
+        if(profileContract == null){
+            console.log("no WhatsDapp profile found for " + name);
+            return null;
+        }
+
+        let profile = {
+            identity: dpnsContract.ownerId.toString(),
+            whatsDappName: profileContract.data.displayname,
+            keybundle: {
+                prekeys: profileContract.data.prekeys,
+                identity_public_key: profileContract.data.identity_public_key,
+                signed_identity_public_key: profileContract.data.signed_identity_public_key
+            }
+        }
+
+        console.log(profile);
+        return profile;
     }
 }
 
