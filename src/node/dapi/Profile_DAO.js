@@ -61,7 +61,7 @@ class Profile_DAO {
 			// Sign and submit the document replace transition
 			return documents[0];
 		} catch (e) {
-			console.error('Something went wrong:', e);
+			console.log('Something went wrong:', e);
 		}
 	}
 
