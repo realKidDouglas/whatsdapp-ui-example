@@ -22,7 +22,7 @@ class MessageList extends Component {
       return (
         <ul className="list-group space-filling-msglist" ref={el => {this.messageListRef = el}}>
           {this.props.messages.map((message, index) =>
-              this.renderItem(message)
+              this.renderItem(message, index)
             )}
         </ul>
       )
@@ -36,10 +36,10 @@ class MessageList extends Component {
     }
   }
 
-  renderItem(message) {
+  renderItem(message, index) {
     return (
-      <li key={message.timestamp} className="list-group-item">
-          <strong>{message.senderHandle + (message.senderHandle === this.props.loggedInUser.handle ? " (You)" : "")}</strong>
+      <li key={index} className="list-group-item">
+          <strong>{message.senderHandle + (message.senderHandle === this.props.loggedInUser.identity ? " (You)" : "")}</strong>
           <span className="pull-right grey">{new Date(message.timestamp).toLocaleString()}</span>
           <p className="selectable-text show-full-text">{message.content}</p>
       </li>

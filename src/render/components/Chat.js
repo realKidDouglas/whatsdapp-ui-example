@@ -51,8 +51,9 @@ class Chat extends React.Component {
 
     }
 
-    async onSend(text) {
+    onSend = async (text) => {
         try {
+            console.log(this.state)
             await ipcRenderer.invoke('sendMessage', this.state.activatedSession.handle, text);
         } catch (e) {
             console.log("Could not send message", e)
@@ -86,7 +87,7 @@ class Chat extends React.Component {
                     <MessageList
                         messages={this.state.messages}
                         loggedInUser={this.props.loggedInUser}/>
-                    <SendMessageForm onSend={(t) => this.onSend(t)}/>
+                    <SendMessageForm onSend={this.onSend}/>
                 </div>
             </div>
         )

@@ -54,7 +54,7 @@ class WhatsDapp extends EventEmitter {
             // .then(() => this._client.wallet.getAccount())
             // .then(acc => acc.isReady())
             .then(() => this._pollTimeout = setTimeout(() => this._poll(), 0)) // first poll is immediate
-            .then(() => ({handle: displayname}))
+            .then(() => ({handle: displayname, identity: identity}))
             .catch(e => console.log("error", e));
         return this.initialized
     }
