@@ -66,17 +66,25 @@ class WhatsDapp extends EventEmitter {
         console.log("poll new messages since", this._lastPollTime)
         this._pollTimeout = null
         const pollTime = this._lastPollTime
-        this._lastPollTime = Date.now()
+
 
         // TODO: it should be possible to do this per session / chat partner.
         const messages = await dapiFacade.get_messages_by_time(this._connection, pollTime)
 
+        console.log()
         const messagePromises = messages.map(m => this._broadcastNewMessage(m).catch(e => console.log('broadcast failed!', e)))
         console.log('got', messagePromises.length, 'new messages.')
+        if (messages.length <= 0){
+
+        } else {
+            this._lastPollTime = messages[messages.length-1].createdAt.getTime()
+        }
+
 
         await Promise.all(messagePromises)
 
         this._pollTimeout = setTimeout(() => this._poll(), pollInterval)
+
     }
 
     async _broadcastNewMessage(rawMessage) {
