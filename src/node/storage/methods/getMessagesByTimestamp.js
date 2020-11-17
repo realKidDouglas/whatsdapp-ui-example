@@ -58,8 +58,10 @@ module.exports = (older) => {
                 const chunkPath = path.join(this._storagePath, hashId, i.toString())
                 const encChunk = await readJSON(chunkPath)
                 // encChunk is an array of b64 encoded, encrypted message objects
+                // TODO: only decrypt up to limit number of messages
                 const decChunk = encChunk.map(m => aesDecryptObject(Buffer.from(m, 'base64'), this._key))
                 reverser(decChunk).forEach(message => {
+                    if (resolves.length === 0) return;
                     if (comparer(message.timestamp, timestamp)) {
                         console.log('message in wrong time slice')
                         return
