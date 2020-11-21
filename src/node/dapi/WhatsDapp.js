@@ -21,7 +21,7 @@ class WhatsDapp extends EventEmitter {
      * @returns {Promise<{handle:string}>}
      */
     async connect(opts) {
-        let {mnemonic, sessions, identity, displayname, lastTimestamp} = opts;
+        let {mnemonic, sessions, identity, displayname, lastTimestamp, preKeyBundle} = opts;
         this._lastPollTime = lastTimestamp + 1
         this._client = new Client(mnemonic).client;
         this._connection.platform = this._client.platform;
@@ -38,12 +38,10 @@ class WhatsDapp extends EventEmitter {
 
         if (profile == null) {
             console.log("creating new profile!");
-            let content = {
-                identity_public_key: "Kommt später",
-                signed_identity_public_key: "Kommt später",
-                prekeys: ["kommt", "später"],
-                displayname: displayname,
-            };
+            let content = preKeyBundle
+            content.displayname = displayname
+            content.prekeys = []
+            console.log(content)
             await dapiFacade.create_profile(this._connection, content);
             profile = await dapiFacade.get_profile(this._connection, identity);
         }
@@ -90,7 +88,8 @@ class WhatsDapp extends EventEmitter {
 
     async _broadcastNewMessage(rawMessage) {
         const message = rawMessageToMessage(rawMessage)
-        const session = await this._getOrCreateSession(message.ownerId, message.senderHandle);
+        const session = await this._getOrCreateSession(rawMessage.ownerId, message.senderHandle);
+        await new Promise(r => setTimeout(r, 1000))
         this.emit('new-message', message, session);
         this._lastPollTime = Math.max(this._lastPollTime, message.timestamp + 1);
     }
@@ -99,10 +98,13 @@ class WhatsDapp extends EventEmitter {
         let session;
         if (this._sessions[ownerId] == null) {
             session = {handle: senderHandle, ownerId};
+            const preKeyBundle = (await dapiFacade.get_profile(this._connection, ownerId)).data
+            console.log("id " + ownerId)
+            console.log("bundle " + preKeyBundle)
             this._sessions[ownerId] = session;
             // TODO: get signal keys for a new session
             // make sure storage knows about the new session
-            this.emit('new-session', session);
+            this.emit('new-session', session, preKeyBundle);
         } else {
             session = this._sessions[ownerId];
         }

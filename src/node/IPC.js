@@ -1,5 +1,6 @@
 const WhatsDappNodeStorage = require("./storage/storage");
 const WhatsDapp = require("./dapi/WhatsDapp");
+const SignalWrapper = require("./signal/SignalWrapper")
 const {ipcMain} = require('electron');
 
 /**
@@ -30,13 +31,21 @@ module.exports = function (opts) {
             password: mnemonic,
             storagePath
         })
+        const signal = new SignalWrapper()
         messenger = new WhatsDapp();
+        if (!await storage.hasPrivateSignalKeys()) {
+            const keys = await signal.generateSignalKeys()
+            await storage.setPrivateData(keys.private)
+            options.preKeyBundle = keys.preKeyBundle
+        }
         const sessionIds = await storage.getSessions()
         const contacts = sessionIds.map(si => ({handle: si}))
 
-        messenger.on('new-session', session => {
+        messenger.on('new-session', (session, preKeyBundle) => {
             console.log("new session", session)
-            storage.addSession(session.handle, {keys: "somekeys!"})
+
+            signal.buildAndPersistSession(storage, session.handle, preKeyBundle)
+            //storage.addSession(session.handle, {keys: "somekeys!"})
             sendMessageToWebContents(window, 'new-session', [session])
         })
 

@@ -3,6 +3,8 @@ module.exports = {
     MAP_FILE_NAME: 'map.blk',
     // the file where the salt for this storage will be stored
     SALT_FILE_NAME: 'salt',
+    // the file where the own signal keys will be stored
+    PRIVATE_FILE_NAME: 'priv',
     // salt byte length for scrypt
     SALT_LENGTH: 32,
     // the used block cipher

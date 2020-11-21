@@ -1,6 +1,6 @@
 const fs = require('fs-extra')
 const path = require('path')
-const {MAP_FILE_NAME, SALT_FILE_NAME} = require('./constants')
+const {MAP_FILE_NAME, SALT_FILE_NAME, PRIVATE_FILE_NAME} = require('./constants')
 const {aesDecryptObject} = require('./crypt')
 
 
@@ -52,7 +52,7 @@ async function getMetaData(storagePath, key) {
     try {
         console.log("getting metadata!")
         // get the session dirs
-        const sessionDirs = (await fs.readdir(storagePath)).filter(f => f !== SALT_FILE_NAME)
+        const sessionDirs = (await fs.readdir(storagePath)).filter(f => (f !== SALT_FILE_NAME && f !== PRIVATE_FILE_NAME))
         // try to read metadata in parallel
         // after we read each file, execution can be sequential again
         // because node is single-thread
@@ -70,11 +70,27 @@ async function getMetaData(storagePath, key) {
     }
 }
 
+async function getPrivateData(storagePath, key) {
+    try {
+        console.log("getting private data!")
+        if (fs.existsSync(path.join(storagePath, PRIVATE_FILE_NAME))) {
+            const ownDataBuf = await fs.readFile(path.join(storagePath, PRIVATE_FILE_NAME))
+            return aesDecryptObject(ownDataBuf, key)
+        } else {
+            return {}
+        }
+    } catch(err) {
+        console.error("can't get own data:", e)
+        return {}
+    }
+}
+
 module.exports = {
     getTargetChunkIndex,
     stringByteLength,
     outputJSON,
     readJSON,
     getFileSize,
-    getMetaData
+    getMetaData,
+    getPrivateData
 }
