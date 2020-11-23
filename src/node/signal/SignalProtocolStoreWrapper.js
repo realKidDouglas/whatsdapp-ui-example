@@ -9,7 +9,7 @@ function SignalProtocolStore(store, remoteIdentity) {
         return (regexMatch != null) ? regexMatch[1] : -1
     }
 
-    this.getOurIdentity = function() {
+    this.getOurIdentity = async function() {
         const privateData = await this.store.getPrivateData()
         return privateData['identityKeyPair']
     }

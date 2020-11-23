@@ -6,5 +6,6 @@
  */
 module.exports = async function getSessionKeys(identityId) {
     await this.initialized
-    return this._metadata[identityId].info
+    const md = this._metadata[identityId]
+    return (md && md.info) || null
 }
