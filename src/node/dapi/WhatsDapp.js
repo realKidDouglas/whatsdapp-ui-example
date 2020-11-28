@@ -21,7 +21,8 @@ class WhatsDapp extends EventEmitter {
      * @returns {Promise<{handle:string}>}
      */
     async connect(opts) {
-        let {mnemonic, sessions, identity, displayname} = opts;
+        let {mnemonic, sessions, identity, displayname, lastTimestamp} = opts;
+        this._lastPollTime = lastTimestamp + 1
         this._client = new Client(mnemonic).client;
         this._connection.platform = this._client.platform;
         this._sessions = sessions;

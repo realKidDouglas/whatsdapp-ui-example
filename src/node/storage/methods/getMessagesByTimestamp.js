@@ -50,7 +50,7 @@ module.exports = (older) => {
             await this.initialized
             // run through the chunks until we can't find messages anymore
             // or we fulfilled limit
-            const stopVal = dir > 1
+            const stopVal = dir > 0
                 ? chunks.length
                 : -1
             for (let i = targetChunkIndex; i !== stopVal; i = i + dir) {

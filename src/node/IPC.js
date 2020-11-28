@@ -46,7 +46,8 @@ module.exports = function (opts) {
             sendMessageToWebContents(window, 'new-message', [msg, session]);
         })
 
-        return messenger.connect(Object.assign({}, options, {sessions: contacts}));
+        const lastTimestamp = await storage.getLastTimestamp();
+        return messenger.connect(Object.assign({}, options, {sessions: contacts, lastTimestamp}));
     }
 
     //login handling

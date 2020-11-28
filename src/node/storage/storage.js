@@ -44,6 +44,7 @@ function WhatsDappNodeStorage(opts) {
 
     // methods
     this.getSessions = require('./methods/getSessions.js')
+    this.getLastTimestamp = require('./methods/getLastTimestamp.js')
     this.getSessionKeys = require('./methods/getSessionKeys.js')
     this.updateSessionKeys = require('./methods/updateSessionKeys.js')
     this.addSession = require('./methods/addSession.js')
