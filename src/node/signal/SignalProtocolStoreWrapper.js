@@ -10,7 +10,7 @@ function SignalProtocolStore(store, remoteIdentity) {
     }
 
     this.getOurIdentity = async function() {
-        const privateData = await this.store.getPrivateData()
+    const privateData = await this.store.getPrivateData()
         return privateData['identityKeyPair']
     }
     this.getLocalRegistrationId = function() {
@@ -39,7 +39,7 @@ function SignalProtocolStore(store, remoteIdentity) {
         if (identifier === null || identifier === undefined)
             throw new Error("Tried to put identity key for undefined/null key");
 
-        const address = new libsignal.ProtocolAddress.from(identifier);
+        const address = libsignal.ProtocolAddress.from(identifier);
         // identifier is name.deviceId
         const deviceId = this._getDeviceId(identifier);
         const name = identifier.replace("." + deviceId, "");
@@ -97,21 +97,13 @@ function SignalProtocolStore(store, remoteIdentity) {
         }
         return Promise.resolve(this.store.getSessionKeys(identifier)[key]);
     }
-    this.storeSession = function(identifier, record) {
-        var deviceId = this._getDeviceId(identifier);
-        var address = new libsignal.ProtocolAddress.from(identifier);
-        let name = identifier;
-        if (deviceId !== -1) {
-            const key = "session-device-" + deviceId;
-            name = identifier.replace("." + deviceId, "");
+    this.storeSession = async function(identifier, record) {
+        const address = libsignal.ProtocolAddress.from(identifier);
+        if (await this.store.hasSession(address.id)) {
+            this.store.updateSessionKeys(address.id, record)
         } else {
-            const key = "session";
+            this.store.addSession(address.id, record)
         }
-        return Promise.resolve(
-            this.store.updateSessionKeys(identifier, record).catch(
-                () => this.store.addSession(identifier, record)
-            )
-        );
     }
 }
 

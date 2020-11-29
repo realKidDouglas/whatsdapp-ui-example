@@ -10,7 +10,8 @@ module.exports = async function updateSessionKeys(identityId, info) {
     const p = new Promise(r => resolve = r)
 
     const handler = async (identityId, info) => {
-        if (this._metadata[identityId] == null) throw new Error("could not update session keys, session not found!")
+        if (this._metadata[identityId] == null) throw new Error("could not update session keys, no session with " +
+            identityId + " found!")
         this._metadata[identityId].info = info
         await this._saveMetaData(identityId)
         resolve()

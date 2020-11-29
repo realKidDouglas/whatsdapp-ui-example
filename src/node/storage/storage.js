@@ -57,7 +57,8 @@ function WhatsDappNodeStorage(opts) {
     this.printSession = require('./methods/printSession.js')
     this.setPrivateData = require('./methods/setPrivateData.js')
     this.getPrivateData = require('./methods/getPrivateData.js')
-    this.hasPrivateSignalKeys = require('./methods/hasPrivateSignalKeys')
+    this.hasPrivateSignalKeys = require('./methods/hasPrivateSignalKeys.js')
+    this.hasSession = require('./methods/hasSession.js')
 
     /**
      * return a list of promises of messages, starting at a timestamp.

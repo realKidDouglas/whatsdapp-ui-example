@@ -102,8 +102,6 @@ class WhatsDapp extends EventEmitter {
             console.log("id " + ownerId)
             console.log("bundle " + preKeyBundle)
             this._sessions[ownerId] = session;
-            // TODO: get signal keys for a new session
-            // make sure storage knows about the new session
             this.emit('new-session', session, preKeyBundle);
         } else {
             session = this._sessions[ownerId];
