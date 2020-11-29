@@ -137,7 +137,33 @@ class Message_DAO {
             // Sign and submit the document delete transition
             return connection.platform.documents.broadcast({delete: [document]}, connection.identity);
         } catch (e) {
-            console.error('Something went wrong:', e);
+            console.log('Something went wrong:', e);
+        }
+    }
+
+    /**
+     *
+     * @param connection
+     * @param time
+     * @param senderid
+     * @returns {Promise<*>}
+     */
+    async getMessageFromByTime(connection, time, senderid){
+        try{
+            const documents = await connection.platform.documents.get(
+                'message_contract.message',
+                {
+                    where: [
+                        ['$ownerId', "==", senderid],
+                        ['receiverid', "==", connection.identity.getId().toJSON()],
+                        ['$createdAt', ">=", time],
+                    ],
+                },
+            );
+
+            return documents
+        }catch (e) {
+            console.log('Something went wrong:', e);
         }
     }
 }

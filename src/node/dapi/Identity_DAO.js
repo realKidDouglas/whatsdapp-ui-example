@@ -77,7 +77,20 @@ class Identity_DAO {
         try {
             return connection.platform.names.resolve(name);
         } catch (e) {
-            console.error('Something went wrong:', e);
+            console.log('Something went wrong:', e);
+        }
+    }
+
+    /**
+     * Return the identity balance
+     * @param connection
+     * @returns Credits
+     */
+    async getIdentityBalance(connection){
+        try{
+            return connection.identity.balance;
+        }catch (e) {
+            console.log('Something went wrong:', e);
         }
     }
 }

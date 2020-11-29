@@ -72,7 +72,17 @@ class DAPI_Facade {
         return this.message_DAO.delete_message(connection, messageid);
     }
 
+    async getMessageFromByTime(connection, time, senderid){
+        return this.message_DAO.getMessageFromByTime(connection, time, senderid);
+    }
 
+    async getIdentityBalance(connection){
+        return this.identity_DAO.getIdentityBalance(connection);
+    }
+
+    async getUnusedAddress(client){
+        return this.wallet_DAO.getUnusedAddress(client);
+    }
 }
 
 module.exports.DAPI_Facade = DAPI_Facade;
