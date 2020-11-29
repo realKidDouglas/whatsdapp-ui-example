@@ -1,22 +1,26 @@
-
-
 class Wallet_DAO {
-    constructor() {
+	constructor() {
 
-    }
+	}
 
-    async create_wallet(client){
-        try {
+	async create_wallet(client) {
+		try {
+			return client.wallet.exportWallet();
+		} catch (e) {
+			console.log('Something went wrong:', e);
+		}
+	}
 
-                const account = await client.getWalletAccount();
+	async getUnusedAddress(client) {
+		try {
+			const account = await client.getWalletAccount();
+			const address = account.getUnusedAddress();
 
-                return client.wallet.exportWallet();
-
-
-        } catch (e) {
-            console.error('Something went wrong:', e);
-        }
-    }
+			return address;
+		} catch (e) {
+			console.log('Something went wrong:', e);
+		}
+	}
 
 }
 
