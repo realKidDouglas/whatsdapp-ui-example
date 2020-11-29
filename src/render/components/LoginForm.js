@@ -1,5 +1,16 @@
 import React from 'react'
 const {ipcRenderer} = window.require('electron');
+import styles from './styles';
+import withStyles from '@material-ui/core/styles/withStyles';
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import TextField  from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import FormControl from '@material-ui/core/FormControl';
+import Paper from '@material-ui/core/Paper';
+
+
 
 class LoginForm extends React.Component {
 
@@ -56,32 +67,40 @@ class LoginForm extends React.Component {
     } else {
       console.error("Log in of user failed")
     }
+    
   }
 
+
   render() {
+
+    const { classes } = this.props;
     return (
-      <div className="login-container padded">
+         
+      <main className={classes.main}>
+       <CssBaseline/>
+       <Paper className={classes.paper}>
         <form onSubmit={this.onLogin}  className="">
-          <h1 className="text-center">Log in!</h1>
-          <div className="form-group">
-            <label>Wallet mnemonic</label>
-            <input type="text" className="form-control" placeholder="enter your mnemonic" value={this.state.mnemonic} onChange={this.handleMnemonicChange} />
-          </div>
-          <div className="form-group">
-            <label>Identity</label>
-            <input type="text" className="form-control" placeholder="enter your identity" value={this.state.identity} onChange={this.handleIdentityChange} />
-          </div>
-          <div className="form-group">
-            <label>Username</label>
-            <input type="text" className="form-control" placeholder="enter your displayname" value={this.state.displayname} onChange={this.handleDisplayNameChange} />
-          </div>
-          <div className="form-actions">
-            <button type="submit" className="btn btn-large btn-primary">Log in</button>
-          </div>
+        
+          <Typography component="h1" variant="h5">
+          Log in!
+          </Typography>
+          <FormControl required fullWidth margin='normal'>
+            <TextField id="standard-adornment-amount" label="enter your mnemonic" value={this.state.mnemonic} onChange={this.handleMnemonicChange} />
+            </FormControl>
+            <FormControl required fullWidth margin='normal'>
+            <TextField id="standard-basic" label="enter your identity" value={this.state.identity} onChange={this.handleIdentityChange} />
+            </FormControl>
+            <FormControl required fullWidth margin='normal'>
+            <TextField id="standard-basic" label="enter your displayname" value={this.state.displayname} onChange={this.handleDisplayNameChange} />
+            </FormControl>
+         
+          <Button
+              type='submit' fullWidth variant='contained' color='primary' className={classes.submit}>Log in</Button>
         </form>
-      </div>
-    )
+        </Paper>
+        </main>
+    );
   }
 }
 
-export default LoginForm
+export default withStyles(styles)(LoginForm); 

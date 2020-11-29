@@ -9,6 +9,7 @@
     "electron-rebuild": "2.3.2"
   },
   "dependencies": {
+    "@material-ui/core": "^4.11.1",
     "@types/fs-extra": "^9.0.3",
     "dash": "^3.16.2",
     "electron-localshortcut": "3.2.1",
