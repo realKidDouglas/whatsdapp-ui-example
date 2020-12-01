@@ -10,10 +10,10 @@ function SignalProtocolStore(store, remoteIdentity) {
     }
 
     this.getOurIdentity = async function() {
-    const privateData = await this.store.getPrivateData()
+        const privateData = await this.store.getPrivateData()
         return privateData['identityKeyPair']
     }
-    this.getLocalRegistrationId = function() {
+    this.getOurRegistrationId = function() {
         const privateData = this.store.getPrivateData()
         return privateData['registrationId']
     }
@@ -56,27 +56,23 @@ function SignalProtocolStore(store, remoteIdentity) {
         }
     }
 
-    /* Returns a prekeypair object or undefined */
-    this.loadPreKey = function(keyId) {
-        var res = this.get('25519KeypreKey' + keyId);
-        if (res !== undefined) {
-            res = { pubKey: res.pubKey, privKey: res.privKey };
-        }
+    this.loadPreKey = async function(keyId) {
+        var res = (await this.store.getPrivateData()).preKey.keyPair
         return Promise.resolve(res);
     }
-    this.storePreKey = function(keyId, keyPair) {
-        return Promise.resolve(this.store.setOwnData('preKey_' + keyId, keyPair)['preKey_' + keyId]);
+    this.storePreKey = async function(keyId, keyPair) {
+        var privateData = await this.store.getPrivateData()
+        privateData['preKey'] =  keyPair
+        return Promise.resolve(this.store.setPrivateData(privateData));
     }
-    this.removePreKey = function(keyId) {
-        return Promise.resolve(this.remove('25519KeypreKey' + keyId));
+    this.removePreKey = async function(keyId) {
+        var privateData = await this.store.getPrivateData()
+        delete privateData['preKey']
+        return Promise.resolve(this.store.setPrivateData(privateData));
     }
 
-    /* Returns a signed keypair object or undefined */
-    this.loadSignedPreKey = function(keyId) {
-        var res = this.get('25519KeysignedKey' + keyId);
-        if (res !== undefined) {
-            res = { pubKey: res.pubKey, privKey: res.privKey };
-        }
+    this.loadSignedPreKey = async function(keyId) {
+        var res = (await this.store.getPrivateData()).signedPreKey.keyPair
         return Promise.resolve(res);
     }
     this.storeSignedPreKey = function(keyId, keyPair) {
@@ -86,23 +82,41 @@ function SignalProtocolStore(store, remoteIdentity) {
         return Promise.resolve(this.remove('25519KeysignedKey' + keyId));
     }
 
-    this.loadSession = function(identifier) {
-        const deviceId = this._getDeviceId(identifier);
-        let key;
-        if (deviceId !== -1) {
-            key = "session-device-" + deviceId;
-            identifier = identifier.replace("." + deviceId, "");
-        } else {
-            key = "session";
+    this.loadSession = async function(identifier) {
+        let identityId
+        let deviceString
+        try {
+            const address = libsignal.ProtocolAddress.from(identifier);
+            identityId = address.id
+            deviceString = "device" + address.deviceId
+        } catch {
+            identityId = identifier
+            deviceString = "sessioncipher"
         }
-        return Promise.resolve(this.store.getSessionKeys(identifier)[key]);
+        let result = await this.store.getSessionKeys(identityId, deviceString)
+        if (deviceString == "sessioncipher") {
+            result.storage = this
+        }
+        return result
     }
     this.storeSession = async function(identifier, record) {
-        const address = libsignal.ProtocolAddress.from(identifier);
-        if (await this.store.hasSession(address.id)) {
-            this.store.updateSessionKeys(address.id, record)
+        let identityId
+        let deviceString
+        try {
+            const address = libsignal.ProtocolAddress.from(identifier);
+            identityId = address.id
+            deviceString = "device" + address.deviceId
+        } catch {
+            identityId = identifier
+            deviceString = "sessioncipher"
+            // SessionCiphers contain the storage, which contains the SessionCipher...
+            // To solve this, we remove it before saving
+            record.storage = undefined
+        }
+        if (await this.store.hasSession(identityId)) {
+            await this.store.updateSessionKeys(identityId, deviceString, record)
         } else {
-            this.store.addSession(address.id, record)
+            await this.store.addSession(identityId, deviceString, record)
         }
     }
 }

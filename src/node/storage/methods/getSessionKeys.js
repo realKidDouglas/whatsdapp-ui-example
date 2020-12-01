@@ -4,8 +4,8 @@
  * @param identityId conversation partner we need the keys for
  * @returns {Promise<any>}
  */
-module.exports = async function getSessionKeys(identityId) {
+module.exports = async function getSessionKeys(identityId, deviceString) {
     await this.initialized
     const md = this._metadata[identityId]
-    return (md && md.info) || null
+    return (md && md.info[deviceString]) || null
 }

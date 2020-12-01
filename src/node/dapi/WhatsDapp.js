@@ -89,8 +89,10 @@ class WhatsDapp extends EventEmitter {
     async _broadcastNewMessage(rawMessage) {
         const message = rawMessageToMessage(rawMessage)
         const session = await this._getOrCreateSession(rawMessage.ownerId, message.senderHandle);
-        await new Promise(r => setTimeout(r, 1000))
-        this.emit('new-message', message, session);
+        const sentByUs = (message.ownerId === this._connection.ownerId)
+        await new Promise(r => setTimeout(r, 2000)); // TODO: Solve race condition
+        // TODO: Separate Signals for messages sent by us and other people
+        this.emit('new-message', message, session, sentByUs);
         this._lastPollTime = Math.max(this._lastPollTime, message.timestamp + 1);
     }
 
@@ -99,10 +101,8 @@ class WhatsDapp extends EventEmitter {
         if (this._sessions[ownerId] == null) {
             session = {handle: senderHandle, ownerId};
             const preKeyBundle = (await dapiFacade.get_profile(this._connection, ownerId)).data
-            console.log("id " + ownerId)
-            console.log("bundle " + preKeyBundle)
             this._sessions[ownerId] = session;
-            this.emit('new-session', session, preKeyBundle);
+            await this.emit('new-session', session, preKeyBundle);
         } else {
             session = this._sessions[ownerId];
         }
@@ -129,7 +129,7 @@ class WhatsDapp extends EventEmitter {
 
         // GUI listens to this, can then remove send-progressbar or w/e
         // storage also listens and will save the message.
-        this.emit('new-message', message, {handle: receiver})
+        //this.emit('new-message', message, {handle: receiver})
     }
 
     getSessions() {

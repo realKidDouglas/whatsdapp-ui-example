@@ -12,6 +12,7 @@ module.exports = function (opts) {
     const {window, storagePath} = opts;
     let storage;
     let messenger;
+    let signal;
 
     function sendMessageToWebContents(window, message, args) {
         if (!window || window.isDestroyed()) {
@@ -31,7 +32,7 @@ module.exports = function (opts) {
             password: mnemonic,
             storagePath
         })
-        const signal = new SignalWrapper()
+        signal = new SignalWrapper()
         messenger = new WhatsDapp();
         if (!await storage.hasPrivateSignalKeys()) {
             const keys = await signal.generateSignalKeys()
@@ -41,15 +42,18 @@ module.exports = function (opts) {
         const sessionIds = await storage.getSessions()
         const contacts = sessionIds.map(si => ({handle: si}))
 
-        messenger.on('new-session', (session, preKeyBundle) => {
+        messenger.on('new-session', async (session, preKeyBundle) => {
             console.log("new session", session)
 
-            signal.buildAndPersistSession(storage, session.handle, preKeyBundle)
-            //storage.addSession(session.handle, {keys: "somekeys!"})
+            await signal.buildAndPersistSession(storage, session.handle, preKeyBundle)
             sendMessageToWebContents(window, 'new-session', [session])
         })
 
-        messenger.on('new-message', (msg, session) => {
+        messenger.on('new-message', async (msg, session, sentByUs) => {
+            if (!sentByUs) {
+                const plaintext = await signal.decryptMessage(storage, msg.ownerId, msg.content)
+                msg.content = plaintext
+            }
             storage.addMessageToSession(session.handle, msg)
                 .catch(e => console.log('add message fail:', e));
             sendMessageToWebContents(window, 'new-message', [msg, session]);
@@ -72,8 +76,9 @@ module.exports = function (opts) {
     ipcMain.handle('disconnect', () => messenger.disconnect());
 
     //message handling
-    ipcMain.handle('sendMessage', (event, receiver, content) => {
-        return messenger.sendMessage(receiver, content);
+    ipcMain.handle('sendMessage', async (event, receiver, plaintext) => {
+        const ciphertext = await signal.encryptMessage(storage, receiver, plaintext)
+        return messenger.sendMessage(receiver, ciphertext);
     });
 
     ipcMain.handle('get-chat-history', async (event, contact) => {

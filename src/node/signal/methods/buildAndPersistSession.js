@@ -7,5 +7,4 @@ module.exports = async function buildAndPersistSession(whatsDappStore, identifie
     var address = new libsignal.ProtocolAddress(identifier, deviceId);
     var sessionBuilder = await new libsignal.SessionBuilder(store, address);
     await sessionBuilder.initOutgoing(preKeyBundle);
-    var sessionCipher = new libsignal.SessionCipher(store, address);
 }
