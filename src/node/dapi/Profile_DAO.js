@@ -17,28 +17,35 @@ class Profile_DAO {
 	 * @returns {Promise<*>}
 	 */
 	async create_profile(connection, content) {
+		console.log("Start create_profile")
 
 		const doc_properties = {
-			identity_public_key: content.identity_public_key,
-			signed_identity_public_key: content.signed_identity_public_key,
-			prekeys: content.prekeys,
+			identityKey: content.identityKey,
+			registrationId: content.registrationId,
+			signedPreKey: content.signedPreKey,
+			preKey: content.preKey,
+            prekeys: content.prekeys,
 			displayname: content.displayname
 		}
 
 		// Create the note document
-		const message_document = await connection.platform.documents.create(
-			'profile_contract.profile',
-			connection.identity,
-			doc_properties,
-		);
+		try {
+			const message_document = await connection.platform.documents.create(
+				'profile_contract.profile',
+				connection.identity,
+				doc_properties,
+			);
+			console.log("After message_document")
 
-		const document_batch = {
-			create: [message_document],
+			const document_batch = {
+				create: [message_document],
+			}
+
+			console.log("End create_profile")
+			return connection.platform.documents.broadcast(document_batch, connection.identity);
+		} catch (e) {
+			console.log(e)
 		}
-
-		return connection.platform.documents.broadcast(document_batch, connection.identity);
-
-
 	}
 
 	/**
@@ -86,8 +93,11 @@ class Profile_DAO {
 			);
 
 			// Update document
-			document.set('signed_identity_public_key', content.sipk);
-			document.set('prekeys', content.pks);
+			document.set('identityKey', content.identityKey)
+			document.set('registrationId', content.registrationId)
+			document.set('signedPreKey', content.signedPreKey)
+			document.set('preKey', content.preKey)
+			document.set('prekeys', content.prekeys)
 			// Sign and submit the document replace transition
 			return connection.platform.documents.broadcast({replace: [document]}, connection.identity);
 		} catch (e) {

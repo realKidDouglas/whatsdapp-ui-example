@@ -15,7 +15,7 @@ class Client {
                     contractId: '5RNvuFQjFQXZLUDJ4dJdagULLeqsKbHTvh6dUR3LQqbC'
                 },
                 profile_contract: {
-                    contractId: '7TtNrtmkuX4xbLvPQpRUpz3L1gESitX17QT4CiK5zvJZ'
+                    contractId: 'EZasUKrqisqKx9UrorWs37LU8pxcgnTv7Nbf4o4geNDL'
                 }
             }
         };

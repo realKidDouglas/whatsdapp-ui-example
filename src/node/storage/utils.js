@@ -1,6 +1,6 @@
 const fs = require('fs-extra')
 const path = require('path')
-const {MAP_FILE_NAME, SALT_FILE_NAME} = require('./constants')
+const {MAP_FILE_NAME, SALT_FILE_NAME, PRIVATE_FILE_NAME} = require('./constants')
 const {aesDecryptObject} = require('./crypt')
 
 
@@ -52,7 +52,7 @@ async function getMetaData(storagePath, key) {
     try {
         console.log("getting metadata!")
         // get the session dirs
-        const sessionDirs = (await fs.readdir(storagePath)).filter(f => f !== SALT_FILE_NAME)
+        const sessionDirs = (await fs.readdir(storagePath)).filter(f => (f !== SALT_FILE_NAME && f !== PRIVATE_FILE_NAME))
         // try to read metadata in parallel
         // after we read each file, execution can be sequential again
         // because node is single-thread
@@ -70,11 +70,51 @@ async function getMetaData(storagePath, key) {
     }
 }
 
+async function getPrivateData(storagePath, key) {
+    try {
+        console.log("getting private data!")
+        if (fs.existsSync(path.join(storagePath, PRIVATE_FILE_NAME))) {
+            const ownDataBuf = await fs.readFile(path.join(storagePath, PRIVATE_FILE_NAME))
+            const privateDataObj = aesDecryptObject(ownDataBuf, key)
+            return restoreBuffers(privateDataObj)
+        } else {
+            return {}
+        }
+    } catch (err) {
+        console.error("can't get own data:", err)
+        return {}
+    }
+}
+
+/**
+ * takes a pojo that may have deserialized buffers of the form {type: 'Buffer', data: Array<number>}
+ * should probably be part of our deserialize-logic
+ * @param obj {any} that can contain buffers
+ */
+function restoreBuffers(obj) {
+    if (!(typeof obj === 'object') || Array.isArray(obj)) return obj
+    if (
+        Object.keys(obj).length === 2
+        && obj['type'] === 'Buffer'
+        && Array.isArray(obj.data)
+    ) {
+        return Buffer.from(obj.data)
+    } else {
+        // recurse for each child that's an object and not an array
+        for (const k in obj) {
+            if (obj.hasOwnProperty(k)) obj[k] = restoreBuffers(obj[k])
+        }
+    }
+
+    return obj
+}
+
 module.exports = {
     getTargetChunkIndex,
     stringByteLength,
     outputJSON,
     readJSON,
     getFileSize,
-    getMetaData
+    getMetaData,
+    getPrivateData
 }

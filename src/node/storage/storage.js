@@ -1,4 +1,4 @@
-const {getMetaData} = require('./utils.js')
+const {getMetaData, getPrivateData} = require('./utils.js')
 const {getKey, getSalt} = require('./crypt')
 
 /**
@@ -40,7 +40,11 @@ function WhatsDappNodeStorage(opts) {
         .then(() => getMetaData(this._storagePath, this._key))
         .then(md => this._metadata = md)
         .then(() => console.log("storage metadata:", this._metadata)) // TODO: remove.
+        .then(() => getPrivateData(this._storagePath, this._key))
+        .then(pd => this._privatedata = pd)
+        .then(() => console.log("storage privatedata:", this._privatedata)) // TODO: remove.
         .catch(e => console.error('could not initialize whatsdapp storage:', e))
+
 
     // methods
     this.getSessions = require('./methods/getSessions.js')
@@ -51,6 +55,11 @@ function WhatsDappNodeStorage(opts) {
     this.addMessageToSession = require('./methods/addMessageToSession.js')
     this.deleteSession = require('./methods/deleteSession.js')
     this.printSession = require('./methods/printSession.js')
+    this.setPrivateData = require('./methods/setPrivateData.js')
+    this.getPrivateData = require('./methods/getPrivateData.js')
+    this.hasPrivateSignalKeys = require('./methods/hasPrivateSignalKeys.js')
+    this.hasSession = require('./methods/hasSession.js')
+
     /**
      * return a list of promises of messages, starting at a timestamp.
      * will not return a message that was sent exactly at timestamp.
@@ -78,6 +87,7 @@ function WhatsDappNodeStorage(opts) {
 
     // privates
     this._saveMetaData = require('./methods/saveMetaData.js')
+    this._savePrivateData = require('./methods/savePrivateData.js')
     this._insertMessageToChunk = require('./methods/insertMessageToChunk.js')
     this._reorganizeHistory = require('./methods/reorganizeHistory.js')
 
