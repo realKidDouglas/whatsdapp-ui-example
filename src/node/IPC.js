@@ -1,6 +1,5 @@
 const WhatsDappNodeStorage = require("./storage/storage");
-const WhatsDapp = require("./dapi/WhatsDapp");
-const SignalWrapper = require("./signal/SignalWrapper")
+const {WhatsDapp, SignalWrapper} = require('whatsdapp');
 const {ipcMain} = require('electron');
 
 /**
@@ -51,8 +50,7 @@ module.exports = function (opts) {
 
         messenger.on('new-message', async (msg, session, sentByUs) => {
             if (!sentByUs) {
-                const plaintext = await signal.decryptMessage(storage, msg.ownerId, msg.content)
-                msg.content = plaintext
+                msg.content = await signal.decryptMessage(storage, msg.ownerId, msg.content)
             }
             storage.addMessageToSession(session.handle, msg)
                 .catch(e => console.log('add message fail:', e));
@@ -65,7 +63,7 @@ module.exports = function (opts) {
 
     //login handling
 
-    ipcMain.handle('get-sessions', async (event) => {
+    ipcMain.handle('get-sessions', async () => {
         const s = await messenger.getSessions()
         console.log("get-sessions", s)
         return s
