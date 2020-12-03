@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "@types/fs-extra": "^9.0.3",
     "electron": "10.1.5",
     "foreman": "^2.0.0",
     "react-scripts": "0.8.5",
@@ -10,14 +11,11 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.11.1",
-    "@types/fs-extra": "^9.0.3",
-    "dash": "^3.16.2",
     "electron-localshortcut": "3.2.1",
     "fs-extra": "9.0.1",
     "react": "^16.1.1",
     "react-dom": "^16.1.1",
-    "whatsdapp": "../whatsdapp",
-    "@grpc/grpc-js": "^1.2.2"
+    "whatsdapp": "../whatsdapp"
   },
   "homepage": "./",
   "main": "src/electron-starter.js",
@@ -27,6 +25,6 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "electron": "electron .",
-    "dev": "nf start -p 15475"
+    "dev": "(cd ../whatsdapp && npm run dist) && nf start -p 15475"
   }
 }

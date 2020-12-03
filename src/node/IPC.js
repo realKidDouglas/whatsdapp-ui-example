@@ -44,7 +44,7 @@ module.exports = function (opts) {
         messenger.on('new-session', async (session, preKeyBundle) => {
             console.log("new session", session)
 
-            await signal.buildAndPersistSession(storage, session.handle, preKeyBundle)
+            await signal.buildAndPersistSession(storage, session.profile_name, preKeyBundle)
             sendMessageToWebContents(window, 'new-session', [session])
         })
 
@@ -52,7 +52,7 @@ module.exports = function (opts) {
             if (!sentByUs) {
                 msg.content = await signal.decryptMessage(storage, msg.ownerId, msg.content)
             }
-            storage.addMessageToSession(session.handle, msg)
+            storage.addMessageToSession(session.profile_name, msg)
                 .catch(e => console.log('add message fail:', e));
             sendMessageToWebContents(window, 'new-message', [msg, session]);
         })
