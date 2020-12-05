@@ -9,7 +9,8 @@ module.exports = async function getLastTimestamp() {
         console.log(identityId)
         // get the newest messsage that has a timestamp smaller than infinity
         const lastMessage = await this.getPreviousMessages(identityId, Infinity, 1)[0]
-        max = Math.max(max, lastMessage.timestamp)
+        if (lastMessage == null) continue;
+        max = Math.max(max, lastMessage.timestamp);
     }
     return max
 }
