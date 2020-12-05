@@ -13,7 +13,7 @@ class Chat extends React.Component {
         this.state = {
             sessions: [],
             handlesWithNewMessage: [],
-            activatedSession: {handle: null},
+            activatedSession: {profile_name: null},
             messages: [] //only the message history with activated contact
         }
     }
@@ -33,16 +33,16 @@ class Chat extends React.Component {
 
     async handleNewMessage(args) {
         const [msg, session] = args
-        if (!this.state.sessions.map(s => s.handle).includes(session.handle)) {
+        if (!this.state.sessions.map(s => s.profile_name).includes(session.profile_name)) {
             console.log('session new!', session);
             this.setState({sessions: this.state.sessions.concat([session])});
         }
 
-        const tmpSes = this.state.handlesWithNewMessage.concat([session.handle]);
+        const tmpSes = this.state.handlesWithNewMessage.concat([session.profile_name]);
         this.setState({handlesWithNewMessage: tmpSes});
 
         // if the active contact is the one that sent the msg
-        if (tmpSes.indexOf(this.state.activatedSession.handle) > -1) {
+        if (tmpSes.indexOf(this.state.activatedSession.profile_name) > -1) {
             const newMessagesArray = this.state.messages
                 .concat(msg)
                 .sort(sortByTime)
@@ -54,7 +54,7 @@ class Chat extends React.Component {
     onSend = async (text) => {
         try {
             console.log(this.state)
-            await ipcRenderer.invoke('sendMessage', this.state.activatedSession.handle, text);
+            await ipcRenderer.invoke('sendMessage', this.state.activatedSession.profile_name, text);
         } catch (e) {
             console.log("Could not send message", e)
         }
@@ -62,7 +62,7 @@ class Chat extends React.Component {
     }
 
     setActivatedSession = contact => {
-        if (this.state.activatedSession.handle === contact.handle) return;
+        if (this.state.activatedSession.profile_name === contact.profile_name) return;
         this.setState({activatedSession: contact})
         this.getChatHistory(contact)
     }
