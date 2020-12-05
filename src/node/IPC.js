@@ -82,7 +82,7 @@ module.exports = function (opts) {
     ipcMain.handle('get-chat-history', async (event, contact) => {
         // TODO: make more args available, getPreviousMessages
         // TODO: can be used to get any part of the history.
-        const msg = await Promise.all(storage.getPreviousMessages(contact.handle));
+        const msg = await Promise.all(storage.getPreviousMessages(contact.profile_name));
         return msg.filter(m => m != null);
     });
 }

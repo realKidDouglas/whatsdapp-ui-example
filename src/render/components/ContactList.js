@@ -23,12 +23,12 @@ class ContactList extends Component {
         // TODO: don't use index as key, might break if order changes.
         return (
             <li key={index}
-                className={session.handle === this.props.openedContact.handle ? "list-group-item active" : "list-group-item"}
+                className={session.profile_name === this.props.openedContact.profile_name ? "list-group-item active" : "list-group-item"}
                 onClick={((e) => this.onContactOpened(session))}>
                 <span className="icon icon-user pull-left media-object"/>
                 <div>
-                    <strong>{session.handle}</strong>
-                    <p>{this.props.handlesWithNewMessage.indexOf(session.handle) > -1 ? "New message(s)..." : "No new message"}</p>
+                    <strong>{session.profile_name}</strong>
+                    <p>{this.props.handlesWithNewMessage.indexOf(session.profile_name) > -1 ? "New message(s)..." : "No new message"}</p>
                 </div>
             </li>
         )
