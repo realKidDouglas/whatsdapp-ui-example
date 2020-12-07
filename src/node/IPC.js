@@ -85,4 +85,13 @@ module.exports = function (opts) {
         const msg = await Promise.all(storage.getPreviousMessages(contact.profile_name));
         return msg.filter(m => m != null);
     });
+
+    ipcMain.handle('findcontact', async (event, dpnsname) => {
+        const n = await messenger.getProfileByName(dpnsname)
+        const f = n.displayName
+        
+
+        return n;
+        
+      });
 }
