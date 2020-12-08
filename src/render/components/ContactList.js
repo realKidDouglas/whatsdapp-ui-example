@@ -5,8 +5,8 @@ class ContactList extends Component {
     constructor(props) {
         super(props)
         this.state = {
-          displayname: "",
-          name: [],
+        findContactViaDPNS: "",
+        name: [],
         }
       }
     onContactOpened(session) {
@@ -14,19 +14,15 @@ class ContactList extends Component {
     }
     handleDisplayNameChange = event => {
         this.setState({
-          displayname: event.target.value
+            findContactViaDPNS: event.target.value
         })
       }
      
 
     async findContact(){
-
-        let displayname = this.state.displayname
-
-        let contact = await ipcRenderer.invoke('findcontact', displayname)
-        this.setState({name: contact})
-        const f = this.state.name.displayName
-        console.log("get-name", f)
+        let newSession = await ipcRenderer.invoke('findcontact', this.state.findContactViaDPNS)
+        //console.log("get-name", contact)
+        this.props.newContact(newSession);
     }
 
     render() {
@@ -35,7 +31,7 @@ class ContactList extends Component {
                 <form onSubmit={this.onContactDisplay}  className=""></form>
             <ul className="list-group">
                 <li className="list-group-header">
-                    <input className="form-control" type="text" placeholder="Search for someone" value={this.state.displayname} onChange={this.handleDisplayNameChange}/>
+                    <input className="form-control" type="text" placeholder="Search for someone" value={this.state.findContactViaDPNS} onChange={this.handleDisplayNameChange}/>
                 </li>
                 {this.props.sessions.map((contact, index) => {
                     return this.renderItem(contact, index)

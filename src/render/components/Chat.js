@@ -61,6 +61,12 @@ class Chat extends React.Component {
         // we will get a new-message event from the messenger as soon as the msg is sent.
     }
 
+    newContact = session => {
+        this.setState({sessions: this.state.sessions.concat([session])});
+        console.log("New Session: ");
+        console.log(session)
+    }
+
     setActivatedSession = contact => {
         if (this.state.activatedSession.profile_name === contact.profile_name) return;
         this.setState({activatedSession: contact})
@@ -81,6 +87,7 @@ class Chat extends React.Component {
                         openedContact={this.state.activatedSession}
                         setOpenedContact={this.setActivatedSession}
                         handlesWithNewMessage={this.state.handlesWithNewMessage}
+                        newContact={this.newContact}
                     />
                 </div>
                 <div className="pane in-column">
