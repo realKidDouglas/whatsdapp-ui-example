@@ -1,4 +1,13 @@
 import React, {Component} from 'react'
+import { withStyles } from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import PersonIcon from '@material-ui/icons/Person';
+
 const {ipcRenderer} = window.require('electron');
 
 class ContactList extends Component {
@@ -30,8 +39,29 @@ class ContactList extends Component {
     }
 
     render() {
+        let { classes } = this.props;
+
         return (
-            <div>
+            <Drawer
+                className={classes.drawer}
+                variant="permanent"
+                classes={{
+                    paper: classes.drawerPaper,
+                  }}
+                anchor="left"
+            >
+                <div className={classes.toolbar} />
+                <Divider />
+                <List>
+                {['Contact a', 'Contact b', 'Contact c', 'Contact d'].map((text, index) => (
+                    <ListItem button key={text}>
+                        <ListItemIcon><PersonIcon/></ListItemIcon>
+                        <ListItemText primary={text} />
+                    </ListItem>
+                ))}
+                </List>
+            </Drawer>
+            /*<div>
                 <form onSubmit={this.onContactDisplay}  className=""></form>
             <ul className="list-group">
                 <li className="list-group-header">
@@ -43,11 +73,11 @@ class ContactList extends Component {
             </ul>
             <button type="submit" className="btn btn-form btn-primary pull-right small-margin"onClick={() => this.findContact()}>Search contact</button>
             <div>{this.state.name.displayName}</div>
-            </div>
+            </div>*/
         );
     }
 
-    renderItem(session, index) {
+    /*renderItem(session, index) {
         // TODO: don't use index as key, might break if order changes.
         return (
             <div>
@@ -62,7 +92,21 @@ class ContactList extends Component {
             </li>
             </div>
         )
-    }
+    }*/
 }
 
-export default ContactList
+const drawerWidth = 250;
+
+const styles = theme => ({
+    drawer: {
+        width: drawerWidth,
+        flexShrink: 0,
+    },
+    drawerPaper: {
+        width: drawerWidth,
+    },
+    // necessary for content to be below app bar
+    toolbar: theme.mixins.toolbar,
+});
+
+export default withStyles(styles)(ContactList)

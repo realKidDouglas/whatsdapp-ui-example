@@ -2,6 +2,7 @@ import React from 'react'
 import MessageList from './MessageList'
 import SendMessageForm from './SendMessageForm'
 import ContactList from './ContactList'
+import { withStyles } from '@material-ui/core/styles';
 
 const {ipcRenderer} = window.require('electron');
 const sortByTime = (a, b) => a.timestamp - b.timestamp;
@@ -73,17 +74,15 @@ class Chat extends React.Component {
     }
 
     render() {
+        let { classes } = this.props;
         return (
-            <div className="pane-group">
-                <div className="pane pane-sm sidebar">
-                    <ContactList
-                        sessions={this.state.sessions}
-                        openedContact={this.state.activatedSession}
-                        setOpenedContact={this.setActivatedSession}
-                        handlesWithNewMessage={this.state.handlesWithNewMessage}
-                    />
-                </div>
-                <div className="pane in-column">
+            <div className={classes.chat}>
+            <ContactList
+                sessions={this.state.sessions}
+                openedContact={this.state.activatedSession}
+                setOpenedContact={this.setActivatedSession}
+                handlesWithNewMessage={this.state.handlesWithNewMessage}/>
+                <div className={classes.inColumn}>
                     <MessageList
                         messages={this.state.messages}
                         loggedInUser={this.props.loggedInUser}/>
@@ -94,4 +93,16 @@ class Chat extends React.Component {
     }
 }
 
-export default Chat
+const styles = theme => ({
+    chat: {
+        display: 'flex',
+        height: '100vh',
+    },
+    inColumn: {
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+    }
+});
+
+export default withStyles(styles)(Chat)
