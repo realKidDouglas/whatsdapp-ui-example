@@ -39,7 +39,7 @@ module.exports = function (opts) {
             options.preKeyBundle = keys.preKeyBundle
         }
         const sessionIds = await storage.getSessions()
-        const contacts = sessionIds.map(si => ({handle: si}))
+        const contacts = sessionIds.map(si => ({profile_name: si}))
 
         messenger.on('new-session', async (session, preKeyBundle) => {
             console.log("new session", session)
