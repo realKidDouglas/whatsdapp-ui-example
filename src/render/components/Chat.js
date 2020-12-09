@@ -72,6 +72,10 @@ class Chat extends React.Component {
         if (this.state.activatedSession.profile_name === contact.profile_name) return;
         this.setState({activatedSession: contact})
         this.getChatHistory(contact)
+        const index = this.state.handlesWithNewMessage.findIndex(contact.profile_name);
+        if (index > -1) {
+            this.setState({handlesWithNewMessage: this.state.handlesWithNewMessage.splice(index, 1)})
+        }
     }
 
     async getChatHistory(contact) {

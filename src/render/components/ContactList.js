@@ -84,11 +84,11 @@ class ContactList extends Component {
                                         <Avatar><PersonIcon/></Avatar>
                                     }
                                 </ListItemAvatar>
-                                <ListItemText primary={session.profile_name} secondary="secondary text"/>
+                                <ListItemText className={classes.listItemText} primary={session.profile_name}/>
                             </ListItem>
                         )
                     })}
-                {/*['Contact a', 'Contact b', 'Contact c', 'Contact d'].map((text, index) => (
+                {/*['Contact a', 'Contactbghcjzdfjzdgzjdgjdjjgvnvghnvgngf', 'Contact c', 'Contact d'].map((text, index) => (
                     <ListItem button selected={index === 1} key={text} onClick={((e) => console.log("Kontakt angeklickt!" + text))}>
                         <ListItemAvatar>
                             {index > 1 ?
@@ -99,7 +99,7 @@ class ContactList extends Component {
                                 <Avatar><PersonIcon/></Avatar>
                             }
                         </ListItemAvatar>
-                        <ListItemText primary={text}/>
+                        <ListItemText className={classes.listItemText} primary={text}/>
                     </ListItem>
                         ))*/}
                 </List>
@@ -120,6 +120,9 @@ const styles = theme => ({
     },
     // necessary for content to be below app bar
     toolbar: theme.mixins.toolbar,
+    listItemText: {
+        overflowWrap: "break-word",
+    }
 });
 
 export default withStyles(styles)(ContactList)
