@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Chat from './Chat';
 import LoginForm from './LoginForm';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 class App extends Component {
     constructor(props) {
@@ -17,15 +18,13 @@ class App extends Component {
     render() {
         if (this.state.loggedInUser) {
             return (
-                <div className="window-content">
+                <CssBaseline>
                     <Chat loggedInUser={this.state.loggedInUser}/>
-                </div>
+                </CssBaseline>
             )
         } else {
             return (
-                <div className="window-content">
-                    <LoginForm setLoggedInUser={this.setLoggedInUser}/>
-                </div>
+                <LoginForm setLoggedInUser={this.setLoggedInUser}/>
             )
         }
     }

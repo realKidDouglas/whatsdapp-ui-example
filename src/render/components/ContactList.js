@@ -1,64 +1,125 @@
 import React, {Component} from 'react'
+import { withStyles } from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import Avatar from '@material-ui/core/Avatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import PersonIcon from '@material-ui/icons/Person';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import Badge from '@material-ui/core/Badge';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import IconButton from '@material-ui/core/IconButton';
+import TextField from '@material-ui/core/TextField';
+import Tooltip from '@material-ui/core/Tooltip';
+
 const {ipcRenderer} = window.require('electron');
 
 class ContactList extends Component {
     constructor(props) {
         super(props)
         this.state = {
-        findContactViaDPNS: "",
-        name: [],
+          addContactInput: ""
         }
-      }
+    }
+
     onContactOpened(session) {
         this.props.setOpenedContact(session)
     }
-    handleDisplayNameChange = event => {
-        this.setState({
-            findContactViaDPNS: event.target.value
-        })
-      }
-     
 
-    async findContact(){
-        let newSession = await ipcRenderer.invoke('findcontact', this.state.findContactViaDPNS)
-        //console.log("get-name", contact)
-        this.props.newContact(newSession);
+    onAddContactInputChange = event => {
+        this.setState({
+            addContactInput: event.target.value
+        })
+    }
+
+    addContact = async (event) => {
+        //TODO: Feedback if profile does not exist
+        if(this.state.addContactInput !== ""){
+            const newSession = await ipcRenderer.invoke('findcontact', this.state.addContactInput)
+            this.props.newContact(newSession);
+            this.setState({addContactInput: ""});
+        }
     }
 
     render() {
-        return (
-            <div>
-                <form onSubmit={this.onContactDisplay}  className=""></form>
-            <ul className="list-group">
-                <li className="list-group-header">
-                    <input className="form-control" type="text" placeholder="Search for someone" value={this.state.findContactViaDPNS} onChange={this.handleDisplayNameChange}/>
-                </li>
-                {this.props.sessions.map((contact, index) => {
-                    return this.renderItem(contact, index)
-                })}
-            </ul>
-            <button type="submit" className="btn btn-form btn-primary pull-right small-margin"onClick={() => this.findContact()}>Search contact</button>
-            <div>{this.state.name.displayName}</div>
-            </div>
-        );
-    }
+        let { classes } = this.props;
 
-    renderItem(session, index) {
-        // TODO: don't use index as key, might break if order changes.
         return (
-            <div>
-            <li key={index}
-                className={session.profile_name === this.props.openedContact.profile_name ? "list-group-item active" : "list-group-item"}
-                onClick={((e) => this.onContactOpened(session))}>
-                <span className="icon icon-user pull-left media-object"/>
-                <div>
-                    <strong>{session.profile_name}</strong>
-                    <p>{this.props.handlesWithNewMessage.indexOf(session.profile_name) > -1 ? "New message(s)..." : "No new message"}</p>
-                </div>
-            </li>
-            </div>
-        )
+            <Drawer
+                className={classes.drawer}
+                variant="permanent"
+                classes={{paper: classes.drawerPaper,}}
+                anchor="left"
+            >
+                {/*<div className={classes.toolbar} /> {/*necessary for content to be below app bar. TODO: mache ich überhaupt noch ne appbar?/*}
+                <Divider />*/}
+                <List>
+                    <ListItem key={"addContactForm"}>
+                        <TextField label="DPNS Name" value={this.state.addContactInput} variant="outlined" size="small" onChange={this.onAddContactInputChange}/>
+                        <ListItemSecondaryAction>
+                            <Tooltip title="Add new contact">
+                                <IconButton onClick={this.addContact} edge="end" aria-label="Add contact via DPNS Name">
+                                    <PersonAddIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </ListItemSecondaryAction>
+                    </ListItem>
+                    <Divider />
+                    {this.props.sessions.map((session, index) => {
+                        return (
+                            <ListItem
+                                    button
+                                    selected={session.profile_name === this.props.openedContact.profile_name}
+                                    key={index}
+                                    onClick={((e) => this.onContactOpened(session))}>
+                                <ListItemAvatar>
+                                    {this.props.handlesWithNewMessage.indexOf(session.profile_name) > -1 ?
+                                        <Badge color="primary" variant="dot" overlap="circle">
+                                        <Avatar><PersonIcon/></Avatar>
+                                        </Badge>
+                                    :
+                                        <Avatar><PersonIcon/></Avatar>
+                                    }
+                                </ListItemAvatar>
+                                <ListItemText primary={session.profile_name} secondary="secondary text"/>
+                            </ListItem>
+                        )
+                    })}
+                {/*['Contact a', 'Contact b', 'Contact c', 'Contact d'].map((text, index) => (
+                    <ListItem button selected={index === 1} key={text} onClick={((e) => console.log("Kontakt angeklickt!" + text))}>
+                        <ListItemAvatar>
+                            {index > 1 ?
+                                <Badge color="primary" variant="dot" overlap="circle">
+                                <Avatar><PersonIcon/></Avatar>
+                                </Badge>
+                            :
+                                <Avatar><PersonIcon/></Avatar>
+                            }
+                        </ListItemAvatar>
+                        <ListItemText primary={text}/>
+                    </ListItem>
+                        ))*/}
+                </List>
+            </Drawer>
+        );
     }
 }
 
-export default ContactList
+const drawerWidth = 250;
+
+const styles = theme => ({
+    drawer: {
+        width: drawerWidth,
+        flexShrink: 0,
+    },
+    drawerPaper: {
+        width: drawerWidth,
+    },
+    // necessary for content to be below app bar
+    toolbar: theme.mixins.toolbar,
+});
+
+export default withStyles(styles)(ContactList)
