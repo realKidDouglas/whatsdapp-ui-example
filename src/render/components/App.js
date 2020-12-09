@@ -16,17 +16,17 @@ class App extends Component {
     }
 
     render() {
-        //if (this.state.loggedInUser) {
+        if (this.state.loggedInUser) {
             return (
                 <CssBaseline>
                     <Chat loggedInUser={this.state.loggedInUser}/>
                 </CssBaseline>
             )
-        /*} else {
+        } else {
             return (
                 <LoginForm setLoggedInUser={this.setLoggedInUser}/>
             )
-        }*/
+        }
     }
 }
 

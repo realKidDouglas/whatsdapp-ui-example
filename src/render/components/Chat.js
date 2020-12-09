@@ -77,11 +77,11 @@ class Chat extends React.Component {
         let { classes } = this.props;
         return (
             <div className={classes.chat}>
-            <ContactList
-                sessions={this.state.sessions}
-                openedContact={this.state.activatedSession}
-                setOpenedContact={this.setActivatedSession}
-                handlesWithNewMessage={this.state.handlesWithNewMessage}/>
+                <ContactList
+                    sessions={this.state.sessions}
+                    openedContact={this.state.activatedSession}
+                    setOpenedContact={this.setActivatedSession}
+                    handlesWithNewMessage={this.state.handlesWithNewMessage}/>
                 <div className={classes.inColumn}>
                     <MessageList
                         messages={this.state.messages}
