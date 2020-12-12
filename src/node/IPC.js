@@ -53,7 +53,12 @@ module.exports = function (opts) {
                 msg.content = await signal.decryptMessage(storage, msg.ownerId, msg.content)
                 msg.content.message = messenger._getMessageFromContent(msg.content);
                 msg.content.deleteTime = messenger._getDeleteTimeFromContent(msg.content);
-                //messenger._deleteMessages(msg.content.deleteTime);
+                console.log("receiverid");
+                console.log(msg.senderHandle);
+                console.log("MSG");
+                console.log(msg);
+                messenger._deleteMessages(messenger._getDeleteTimeFromContent(msg.content), msg.senderHandle);
+
             }
             storage.addMessageToSession(session.profile_name, msg)
                 .catch(e => console.log('add message fail:', e));
