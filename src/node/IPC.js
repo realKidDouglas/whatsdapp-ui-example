@@ -51,6 +51,9 @@ module.exports = function (opts) {
         messenger.on('new-message', async (msg, session, sentByUs) => {
             if (!sentByUs) {
                 msg.content = await signal.decryptMessage(storage, msg.ownerId, msg.content)
+                msg.content.message = messenger._getMessageFromContent(msg.content);
+                msg.content.deleteTime = messenger._getDeleteTimeFromContent(msg.content);
+                messenger._deleteMessages(msg.content.deleteTime);
             }
             storage.addMessageToSession(session.profile_name, msg)
                 .catch(e => console.log('add message fail:', e));
