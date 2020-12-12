@@ -75,6 +75,7 @@ module.exports = function (opts) {
 
     //message handling
     ipcMain.handle('sendMessage', async (event, receiver, plaintext) => {
+        const inputText = messenger.createInputMessage(plaintext);
         const ciphertext = await signal.encryptMessage(storage, receiver, plaintext)
         return messenger.sendMessage(receiver, ciphertext);
     });
