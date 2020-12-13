@@ -35,7 +35,7 @@ class MessageList extends Component {
                     message.senderHandle
                     + (message.senderHandle === this.props.loggedInUser.identity ? " (You) - " : " - ")
                     + new Date(message.timestamp).toLocaleString()}
-                  secondary={message.content}/>
+                  secondary={JSON.parse(message.content).message}/>
               </ListItem>
             ))}
           </List>
