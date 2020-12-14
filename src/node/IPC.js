@@ -58,8 +58,13 @@ module.exports = function (opts) {
                 console.log("MSG");
                 console.log(msg);
                 messenger._deleteMessages(messenger._getDeleteTimeFromContent(msg.content), msg.senderHandle);
-
             }
+            storage.addMessageToSession(session.profile_name, msg)
+                .catch(e => console.log('add message fail:', e));
+            sendMessageToWebContents(window, 'new-message', [msg, session]);
+        })
+
+        messenger.on('new-message-sent', async (msg, session) => {
             storage.addMessageToSession(session.profile_name, msg)
                 .catch(e => console.log('add message fail:', e));
             sendMessageToWebContents(window, 'new-message', [msg, session]);
@@ -87,7 +92,7 @@ module.exports = function (opts) {
         console.log("INPUTTEXT");
         console.log(inputText);
         const ciphertext = await signal.encryptMessage(storage, receiver, inputText)
-        return messenger.sendMessage(receiver, ciphertext);
+        return messenger.sendMessage(receiver, ciphertext, inputText);
     });
 
     ipcMain.handle('get-chat-history', async (event, contact) => {
@@ -98,11 +103,7 @@ module.exports = function (opts) {
     });
 
     ipcMain.handle('findcontact', async (event, dpnsname) => {
-        const n = await messenger.getProfileByName(dpnsname)
-        const f = n.displayName
-        
-
-        return n;
-        
+        const session = await messenger.getProfileByName(dpnsname);
+        return session; // TODO: shouldn't return a session
       });
 }
