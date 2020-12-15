@@ -1,16 +1,18 @@
 # WhatsDapp UI Example
 
-Electron-based chat GUI using the WhatsDapp Secure Messaging Library.
+Electron-based chat GUI as a reference implementation of the WhatsDapp Secure Messaging Library.
 
 # Overview
 
 - [Usage](#usage)
   * [Requirements](#requirements)
-  * [Installing WhatsDapp library](#installing-whatsdapp-library)
-  * [Installing GUI-Prototype (messenger-dapp-gui-prototype)](#installing-gui-prototype--messenger-dapp-gui-prototype-)
+  * [Install](#install)
+    + [Installing the WhatsDapp library](#installing-the-whatsdapp-library)
+    + [Installing GUI-Prototype (whatsdapp-ui-example)](#installing-gui-prototype--whatsdapp-ui-example-)
   * [Login](#login)
   * [Reset Local Storage](#reset-local-storage)
 - [Sources](#sources)
+
 
 # Usage
 
@@ -29,15 +31,27 @@ Also you need a Dash Identity with some credits. Herefore you can go through the
 
 We will need the **mnemonic** and the **identity** for whatsdapping.
 
-## Installing WhatsDapp library
+## Install
 
-Clone WhatsDapp:
+Run the install-script
 
-    git clone XXX && \
-        cd XXX
+    sh install.sh
+
+and start messenger: 
+
+    npm run dev
+
+If this won't work choose the following long way ;)
+
+### Installing the WhatsDapp library
+
+Clone WhatsDapp-Lib:
+
+    git submodule update --init
 
 Install:
 
+    cd whatsdapp-lib
     npm install
     npm rebuild grpc --runtime=electron --target=v10.1.4
     npm run dist
@@ -51,12 +65,7 @@ In case of error redo easily with:
 
 (We will get rid of the Electron dependency in WhatsDapp-lib soon.)
 
-## Installing GUI-Prototype (messenger-dapp-gui-prototype)
-
-Clone GUI-Prototype (folders `whatsdapp` and `messenger-dapp-gui-prototype` need to be next to each other!):
-
-    git clone XXXX && \
-        cd XXXX
+### Installing GUI-Prototype (whatsdapp-ui-example)
 
 Install:
 
@@ -74,7 +83,6 @@ Run messeger:
     npm run dev
 
 When React code is changed while the app is running, the app updates immediatly after saving.
-
 Chrome Dev Tools can be opened by pressing F12 (check if enableDevTools = true in electron-starter.js).
 
 Sometimes the node process is not killed properly, consumes CPU and blocks used port. 
