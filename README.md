@@ -4,19 +4,16 @@ Electron-based chat GUI as a reference implementation of the WhatsDapp Secure Me
 
 # Overview
 
-- [Usage](#usage)
-  * [Requirements](#requirements)
-  * [Install](#install)
-    + [Installing the WhatsDapp library](#installing-the-whatsdapp-library)
-    + [Installing GUI-Prototype (whatsdapp-ui-example)](#installing-gui-prototype--whatsdapp-ui-example-)
-  * [Login](#login)
-  * [Reset Local Storage](#reset-local-storage)
+- [Requirements](#requirements)
+- [Install](#install)
+  * [Installing the WhatsDapp library](#installing-the-whatsdapp-library)
+  * [Installing GUI-Prototype (whatsdapp-ui-example)](#installing-gui-prototype--whatsdapp-ui-example-)
+- [Login](#login)
+- [Reset Local Storage](#reset-local-storage)
 - [Sources](#sources)
 
 
-# Usage
-
-## Requirements
+# Requirements
  - node v12+
  - npm v6+
 
@@ -31,7 +28,7 @@ Also you need a Dash Identity with some credits. Herefore you can go through the
 
 We will need the **mnemonic** and the **identity** for whatsdapping.
 
-## Install
+# Install
 
 Run the install-script
 
@@ -43,7 +40,7 @@ and start messenger:
 
 If this won't work choose the following long way ;)
 
-### Installing the WhatsDapp library
+## Installing the WhatsDapp library
 
 Clone WhatsDapp-Lib:
 
@@ -65,7 +62,7 @@ In case of error redo easily with:
 
 (We will get rid of the Electron dependency in WhatsDapp-lib soon.)
 
-### Installing GUI-Prototype (whatsdapp-ui-example)
+## Installing GUI-Prototype (whatsdapp-ui-example)
 
 Install:
 
@@ -88,7 +85,7 @@ Chrome Dev Tools can be opened by pressing F12 (check if enableDevTools = true i
 Sometimes the node process is not killed properly, consumes CPU and blocks used port. 
 Find it by `ps aux | grep node` and `kill` corresponding PID.
 
-## Login
+# Login
 
 Type in your **mnemonic** and **identity** (be careful to type in correctly. There is currently no plausibility-check).
 The **displayname** is can be same as your DPNS but doesn't have to. 
@@ -101,7 +98,7 @@ Here you can search for a DPNS name and add to your conversations.
 
 Now start secure chatting over the blockchain ;)
 
-## Reset Local Storage
+# Reset Local Storage
 
 For using another login just remove your local storage folder.
 
