@@ -46,6 +46,10 @@ Clone WhatsDapp-Lib:
 
     git submodule update --init
 
+### If you use MacOS
+There is a issue on foreman for MacOS, for more information look at [link](https://stackoverflow.com/questions/45422184/heroku-local-on-exit-null-throws-err-unknown-signal-error/49716045#49716045)
+To fix this, go into package.json and replace "foreman" by "@heroku/foreman"
+
 Install:
 
     cd whatsdapp-lib
