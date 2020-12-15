@@ -28,6 +28,10 @@ Also you need a Dash Identity with some credits. Herefore you can go through the
 
 We will need the **mnemonic** and the **identity** for whatsdapping.
 
+# If you use MacOS
+There is a issue on foreman for MacOS, for more information look at [link](https://stackoverflow.com/questions/45422184/heroku-local-on-exit-null-throws-err-unknown-signal-error/49716045#49716045).
+To fix this, go into package.json and replace "foreman" by "@heroku/foreman"
+
 # Install
 
 Run the install-script
@@ -45,10 +49,6 @@ If this won't work choose the following long way ;)
 Clone WhatsDapp-Lib:
 
     git submodule update --init
-
-### If you use MacOS
-There is a issue on foreman for MacOS, for more information look at [link](https://stackoverflow.com/questions/45422184/heroku-local-on-exit-null-throws-err-unknown-signal-error/49716045#49716045)
-To fix this, go into package.json and replace "foreman" by "@heroku/foreman"
 
 Install:
 
