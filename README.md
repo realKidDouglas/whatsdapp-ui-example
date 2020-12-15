@@ -102,11 +102,11 @@ Now start secure chatting over the blockchain ;)
 
 For using another login just remove your local storage folder.
 
-Linux: `"~/.config/messenger-dapp-gui-prototype"`
+Linux: `"~/.config/whatsdapp-ui-example"`
 
-macOs: `"~/Library/Application Support/messenger-dapp-gui-prototype"`
+macOs: `"~/Library/Application Support/whatsdapp-ui-example"`
 
-Windows: `"%AppData%/messenger-dapp-gui-prototype"`
+Windows: `"%AppData%/whatsdapp-ui-example"`
 
 
 # Sources
