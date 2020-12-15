@@ -18,9 +18,10 @@ class App extends Component {
     render() {
         if (this.state.loggedInUser) {
             return (
-                <CssBaseline>
+                <React.Fragment>
+                    <CssBaseline/>
                     <Chat loggedInUser={this.state.loggedInUser}/>
-                </CssBaseline>
+                </React.Fragment>
             )
         } else {
             return (
