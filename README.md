@@ -1,16 +1,21 @@
+![Picture](/whatsDapp.png)
+
 # WhatsDapp UI Example
 
-Electron-based chat GUI as a reference implementation of the WhatsDapp Secure Messaging Library.
+Reference chat GUI implementation for the [WhatsDapp](https://github.com/realKidDouglas/whatsdapp-lib) Secure Messaging Library.
 
 # Overview
 
 - [Requirements](#requirements)
-- [If you use MacOS](#if-you-use-macos)
 - [Install](#install)
   * [Installing the WhatsDapp library](#installing-the-whatsdapp-library)
   * [Installing GUI-Prototype (whatsdapp-ui-example)](#installing-gui-prototype--whatsdapp-ui-example-)
 - [Login](#login)
-- [Reset Local Storage](#reset-local-storage)
+- [Troubleshooting](#troubleshooting)
+  * [You cannot write to yourself](#you-cannot-write-to-yourself)
+  * [Burned Identities](#burned-identities)
+  * [Reset Local Storage](#reset-local-storage)
+  * [Foreman on macOS](#foreman-on-macos)
 - [Sources](#sources)
 
 
@@ -29,9 +34,6 @@ Also you need a Dash Identity with some credits. Herefore you can go through the
 
 We will need the **mnemonic** and the **identity** for whatsdapping.
 
-# If you use MacOS
-There is a issue on foreman for MacOS, for more information look at [link](https://stackoverflow.com/questions/45422184/heroku-local-on-exit-null-throws-err-unknown-signal-error/49716045#49716045).
-To fix this, go into package.json and replace "foreman" by "@heroku/foreman"
 
 # Install
 
@@ -103,7 +105,22 @@ Here you can search for a DPNS name and add to your conversations.
 
 Now start secure chatting over the blockchain ;)
 
-# Reset Local Storage
+# Troubleshooting
+
+## You cannot write to yourself
+
+If you want to chat with yourself, just don't ;) 
+Actually it will crash for decryption reasons.
+
+Also it is not possible to run the application multiple times on the same system because it needs one exclusive port.
+You need to use **two different** OS's.
+
+## Burned Identities
+
+At this point if some trouble occurs, easiest way to get rid of it is to create a new Dash identity and DPNS name.
+Try another login with this new identity.
+
+## Reset Local Storage
 
 For using another login just remove your local storage folder.
 
@@ -113,10 +130,24 @@ macOs: `"~/Library/Application Support/whatsdapp-ui-example"`
 
 Windows: `"%AppData%/whatsdapp-ui-example"`
 
+## Foreman on macOS
+There is a issue on foreman for macOS, more information [here](https://stackoverflow.com/questions/45422184/heroku-local-on-exit-null-throws-err-unknown-signal-error/49716045#49716045).
+To fix this, go into `package.json` and replace line
+	
+	"foreman": "^2.0.0",
+
+by 
+
+	"@heroku/foreman": "^2.0.0",
+ 
 
 # Sources
 
-Based on
-* https://github.com/pusher/electron-desktop-chat 
+Based on:
+* https://github.com/mui-org/material-ui
+* https://github.com/facebook/react
+* https://github.com/electron/electron
 * https://github.com/csepulv/electron-with-create-react-app
-* https://github.com/connors/photon
+
+Helped us understanding:
+* https://github.com/pusher/electron-desktop-chat 
