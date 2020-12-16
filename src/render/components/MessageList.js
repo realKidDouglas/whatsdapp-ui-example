@@ -45,29 +45,10 @@ class MessageList extends Component {
     else {
       return (
         <div className={classes.msgList}>
-          No contact selected or no messages for the selected contact available
+          No messages for the selected contact available.
         </div>
       )
     }
-
-    /*return (
-      <div className={classes.msgList}>
-      <List subheader={<li />}>
-        {[0, 1].map((sectionId) => (
-          <li key={`section-${sectionId}`}>
-            <ul className={classes.ul}>
-              <ListSubheader className={classes.listSubheader}>{`I'm sticky ${sectionId}`}</ListSubheader>
-              {[0, 1, 2].map((item) => (
-                <ListItem key={`item-${sectionId}-${item}`}>
-                  <ListItemText primary={`Item ${item} zg zsgf ozsgf soy7zf o8ysgho8ydg p9<szp9  wzgyudghldyubv lkydjbvl iubh vlib lvbd lkbliuhb vl nj vyrildiludnblrbn`} />
-                </ListItem>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </List>
-      </div>
-    )*/
   }
 }
 

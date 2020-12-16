@@ -20,6 +20,7 @@ import BackupIcon from '@material-ui/icons/Backup';
 import TextField from '@material-ui/core/TextField';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Checkbox from '@material-ui/core/Checkbox';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 class LoginForm extends React.Component {
 
@@ -34,7 +35,8 @@ class LoginForm extends React.Component {
       loginType: "login", //TODO: default value based on whether a storage is existing or not
       loginTypeInfo: "Log in with the existing WhatsDapp profile on this device!",
       provideIdentityAddr: false,
-      identityAddr: ''
+      identityAddr: '',
+      loading: false
     }
   }
 
@@ -86,6 +88,7 @@ class LoginForm extends React.Component {
   }
 
   async loginUser() {
+    this.setState({loading: true});
     //TODO: rename identity in options => identityAddr/dashIdentity? 
     let options = {
       mnemonic: (this.state.mnemonic === "" ? null : this.state.mnemonic),
@@ -94,13 +97,19 @@ class LoginForm extends React.Component {
       displayname: (this.state.displayName === "" ? this.state.dpnsName : this.state.displayName),
       password: (this.state.password === "" ? null : this.state.password)
     }
-    let user = await ipcRenderer.invoke('connect', options)
+    let user;
+    try {
+      user = await ipcRenderer.invoke('connect', options)
+    }
+    catch (e) {
+      console.error(e)
+    }
+    this.setState({loading: false});
     if (user) {
       this.props.setLoggedInUser(user)
     } else {
       console.error("GUI: Log in of user failed")
     }
-    
   }
 
 
@@ -142,7 +151,8 @@ class LoginForm extends React.Component {
                 }
               />
             </FormControl>
-            <Button fullWidth type="submit" variant="contained" color="primary" endIcon={<LockOpenIcon />}>
+            <Button fullWidth type="submit" variant="contained" color="primary"
+              endIcon={this.state.loading ? <CircularProgress color="inherit" size={22}/> : <LockOpenIcon />}>
               Log in
             </Button>
           </form>
@@ -196,10 +206,12 @@ class LoginForm extends React.Component {
               />
               <FormHelperText id="register-password">The password is used to encrypt your local chat storage.</FormHelperText>
             </FormControl>
-            <Button disabled={this.state.mnemonic === '' /*|| this.state.dpnsName === '' || this.state.password === ''*/}
-              fullWidth className={classes.submitButton} type="submit" variant="contained" color="primary" endIcon={<BackupIcon />}>
+            <Button disabled={this.state.mnemonic === '' /*|| this.state.dpnsName === ''*/ || this.state.password === ''}
+              fullWidth className={classes.submitButton} type="submit" variant="contained" color="primary"
+              endIcon={this.state.loading ? <CircularProgress color="inherit" size={22}/> : <BackupIcon/> }>
               Create Profile
             </Button>
+            {this.state.loading && <FormHelperText>This can take some time.</FormHelperText>}
           </form>
         </Paper>
       </Container>

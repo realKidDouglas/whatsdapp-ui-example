@@ -94,12 +94,16 @@ class Chat extends React.Component {
                     handlesWithNewMessage={this.state.handlesWithNewMessage}
                     newContact={this.newContact}
                 />
-                <div className={classes.inColumn}>
-                    <MessageList
-                        messages={this.state.messages}
-                        loggedInUser={this.props.loggedInUser}/>
-                    <SendMessageForm onSend={this.onSend}/>
-                </div>
+                {this.state.activatedSession.profile_name ?
+                        <div className={classes.inColumn}>
+                            <MessageList
+                                messages={this.state.messages}
+                                loggedInUser={this.props.loggedInUser}/>
+                            <SendMessageForm onSend={this.onSend}/>
+                        </div>
+                    :
+                        <div>Please select or add a contact on the left.</div>
+                }
             </div>
         )
     }
