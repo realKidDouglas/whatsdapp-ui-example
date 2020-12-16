@@ -5,6 +5,8 @@ module.exports = {
     SALT_FILE_NAME: 'salt',
     // the file where the own signal keys will be stored
     PRIVATE_FILE_NAME: 'priv',
+    // the file where the user data will be stored
+    USER_FILE_NAME: 'usr',
     // salt byte length for scrypt
     SALT_LENGTH: 32,
     // the used block cipher

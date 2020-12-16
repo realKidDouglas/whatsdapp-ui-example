@@ -1,6 +1,6 @@
 const fs = require('fs-extra')
 const path = require('path')
-const {MAP_FILE_NAME, SALT_FILE_NAME, PRIVATE_FILE_NAME} = require('./constants')
+const {MAP_FILE_NAME, SALT_FILE_NAME, PRIVATE_FILE_NAME, USER_FILE_NAME} = require('./constants')
 const {aesDecryptObject} = require('./crypt')
 
 
@@ -86,6 +86,22 @@ async function getPrivateData(storagePath, key) {
     }
 }
 
+async function getUserData(storagePath, key) {
+    try {
+        console.log("getting user data!")
+        if (fs.existsSync(path.join(storagePath, USER_FILE_NAME))) {
+            const ownDataBuf = await fs.readFile(path.join(storagePath, USER_FILE_NAME))
+            const userDataObj = aesDecryptObject(ownDataBuf, key)
+            return restoreBuffers(userDataObj)
+        } else {
+            return {}
+        }
+    } catch (err) {
+        console.error("can't get user data:", err)
+        return {}
+    }
+}
+
 /**
  * takes a pojo that may have deserialized buffers of the form {type: 'Buffer', data: Array<number>}
  * should probably be part of our deserialize-logic
@@ -116,5 +132,6 @@ module.exports = {
     readJSON,
     getFileSize,
     getMetaData,
-    getPrivateData
+    getPrivateData,
+    getUserData
 }

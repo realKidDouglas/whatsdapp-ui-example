@@ -13,6 +13,8 @@ class App extends Component {
 
     setLoggedInUser = user => {
         this.setState({loggedInUser: user})
+        console.log('GUI: Log in!');
+        console.log(user);
     }
 
     render() {

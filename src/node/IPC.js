@@ -26,11 +26,27 @@ module.exports = function (opts) {
     }
 
     async function handleConnect(evt, options) {
-        const {mnemonic} = options
+        const {password} = options
         storage = new WhatsDappNodeStorage({
-            password: mnemonic,
+            password: password,
             storagePath
         })
+
+        // create new account or just login with saved credentials?
+        if(!options.mnemonic) {
+            if(await storage.hasUserData()) {
+                let usr = await storage.getUserData();
+                options.mnemonic = usr.mnemonic;
+                options.identity = usr.identityAddr;
+                options.dpnsName = usr.dpnsName;
+                options.displayname = usr.displayName;
+            }
+            else {
+                console.error("Can't Connect! No mnemonic provided and no saved user data");
+                return null;
+            }
+        } //TODO: Else: Lösche storage, erzeuge neuen
+
         signal = new SignalWrapper()
         messenger = new WhatsDapp();
         if (!await storage.hasPrivateSignalKeys()) {
@@ -71,7 +87,20 @@ module.exports = function (opts) {
         })
 
         const lastTimestamp = await storage.getLastTimestamp();
-        return messenger.connect(Object.assign({}, options, {sessions: contacts, lastTimestamp}));
+        const connectResult = await messenger.connect(Object.assign({}, options, {sessions: contacts, lastTimestamp}));
+        
+        //Connection successful, now we can save the used/generated user data, if new
+        if(!await storage.hasUserData()) {
+            let newUsr = {
+                mnemonic: options.mnemonic,
+                displayName: options.displayname,
+                identityAddr: connectResult.identity,
+                dpnsName: options.dpnsName
+            }
+            await storage.setUserData(newUsr);
+        }
+
+        return connectResult;
     }
 
     //login handling

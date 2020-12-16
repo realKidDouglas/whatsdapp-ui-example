@@ -77,7 +77,7 @@ class LoginForm extends React.Component {
 
   onLogin = e => {
     e.preventDefault()
-    //this.loginUser();
+    this.loginUser();
   }
 
   onRegister = e => {
@@ -86,25 +86,19 @@ class LoginForm extends React.Component {
   }
 
   async loginUser() {
+    //TODO: rename identity in options => identityAddr/dashIdentity? 
     let options = {
-      mnemonic: this.state.mnemonic,
+      mnemonic: (this.state.mnemonic === "" ? null : this.state.mnemonic),
       identity: (this.state.identityAddr === "" ? null : this.state.identityAddr),
-      displayname: this.state.displayName
+      dpnsName: (this.state.dpnsName === "" ? null : this.state.dpnsName),
+      displayname: (this.state.displayName === "" ? this.state.dpnsName : this.state.displayName),
+      password: (this.state.password === "" ? null : this.state.password)
     }
-    /* TODO: Better options-structure in WhatsDapp:
-    let options = {
-      mnemonic: this.state.mnemonic,
-      identityAddr: (this.state.identityAddr === "" ? null : this.state.identityAddr),
-      dpnsName: this.state.dpnsName,
-      displayName: this.state.displayName,
-      password: this.state.password
-    };
-    */
     let user = await ipcRenderer.invoke('connect', options)
     if (user) {
       this.props.setLoggedInUser(user)
     } else {
-      console.error("Log in of user failed")
+      console.error("GUI: Log in of user failed")
     }
     
   }
