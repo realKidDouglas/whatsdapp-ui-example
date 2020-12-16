@@ -105,6 +105,10 @@ Here you can search for a DPNS name and add to your conversations.
 
 Now start secure chatting over the blockchain ;)
 
+If you're interested in, you can find your encrypted messages with the [Dash Platform Explorer](https://pce.cloudwheels.net).
+You can find our contract containing `receiverId`, timestamps and content of yor messages.
+The content is a base64 encoded JSON-object containing signal-encrypted message.
+
 # Troubleshooting
 
 ## You cannot write to yourself
