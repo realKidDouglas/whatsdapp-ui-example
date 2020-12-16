@@ -5,6 +5,7 @@ Electron-based chat GUI as a reference implementation of the WhatsDapp Secure Me
 # Overview
 
 - [Requirements](#requirements)
+- [If you use MacOS](#if-you-use-macos)
 - [Install](#install)
   * [Installing the WhatsDapp library](#installing-the-whatsdapp-library)
   * [Installing GUI-Prototype (whatsdapp-ui-example)](#installing-gui-prototype--whatsdapp-ui-example-)
