@@ -4,7 +4,7 @@
 
 Reference chat GUI implementation for the [WhatsDapp](https://github.com/realKidDouglas/whatsdapp-lib) Secure Messaging Library.
 
-# Overview
+# Overview 
 
 - [Requirements](#requirements)
 - [Install](#install)
