@@ -1,4 +1,4 @@
-![Picture](/whatsDapp.png)
+<img src="/whatsDapp.png" width="100" height="100">
 
 # WhatsDapp UI Example
 
@@ -119,6 +119,7 @@ You need to use **two different** OS's.
 
 At this point if some trouble occurs, easiest way to get rid of it is to create a new Dash identity and DPNS name.
 Try another login with this new identity.
+But before you also should reset local storage.
 
 ## Reset Local Storage
 
