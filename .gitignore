@@ -1,5 +1,7 @@
+
+package-lock.json
+
 # lib
-whatsdapp-lib
 
 # dependencies
 node_modules

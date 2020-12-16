@@ -1,3 +1,4 @@
 [submodule "whatsdapp-lib"]
 	path = whatsdapp-lib
-	url = git@github.com:realKidDouglas/whatsdapp-lib.git
+	url = https://github.com/realKidDouglas/whatsdapp-lib.git
+	branch = doku
