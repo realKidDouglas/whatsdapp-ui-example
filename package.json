@@ -5,7 +5,6 @@
   "devDependencies": {
     "@types/fs-extra": "^9.0.3",
     "electron": "10.1.5",
-    "electron-rebuild": "2.3.2",
     "foreman": "^2.0.0",
     "react-scripts": "0.8.5"
   },
@@ -28,6 +27,8 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "electron": "electron .",
-    "dev": "nf start -p 15475"
+    "dev": "nf start -p 15475",
+    "preinstall": "node install.js pre",
+    "postinstall": "node install.js post"
   }
 }
