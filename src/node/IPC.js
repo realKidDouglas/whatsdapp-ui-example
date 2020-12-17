@@ -60,6 +60,11 @@ module.exports = function (opts) {
         messenger.on('new-session', async (session, preKeyBundle) => {
             console.log("new session", session)
 
+            /* TODO: This is only necessary when a new session is established by searching a contact.
+            If a session is established by a new incoming message, this is a waste of time, since the
+            signal lib will tear it down and rebuild it, because buildAndPersistSession establishes an
+            outgoing session. Incoming sessions are created by the signal lib and don't require explicit
+            session establishment by us. */
             await signal.buildAndPersistSession(storage, session.profile_name, preKeyBundle)
             sendMessageToWebContents(window, 'new-session', [session])
         })
