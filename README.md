@@ -101,7 +101,7 @@ It will be used later for displaying contacts/messages.
 Be patient... Your WhatsDapp profile will be created and uploaded containing your key-bundles for session-setup.
 
 You'll be forwarded to a message window.
-Here you can search for a DPNS name and add to your conversations. 
+Here you can search for a DPNS name and add to your conversations (receiver also needs to upload a WhatDapp profile in first place, too). 
 
 Now start secure chatting over the blockchain ;)
 Be patient again. Sent messages will be shown *after* they arrived at the blockchain implying success.
