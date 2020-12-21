@@ -1,4 +1,4 @@
-const {getMetaData, getPrivateData} = require('./utils.js')
+const {getMetaData, getPrivateData, getUserData} = require('./utils.js')
 const {getKey, getSalt} = require('./crypt')
 
 /**
@@ -43,6 +43,9 @@ function WhatsDappNodeStorage(opts) {
         .then(() => getPrivateData(this._storagePath, this._key))
         .then(pd => this._privatedata = pd)
         .then(() => console.log("storage privatedata:", this._privatedata)) // TODO: remove.
+        .then(() => getUserData(this._storagePath, this._key))
+        .then(ud => this._userdata = ud)
+        .then(() => console.log("storage userdata:", this._userdata)) // TODO: remove.
         .catch(e => console.error('could not initialize whatsdapp storage:', e))
 
 
@@ -58,6 +61,9 @@ function WhatsDappNodeStorage(opts) {
     this.setPrivateData = require('./methods/setPrivateData.js')
     this.getPrivateData = require('./methods/getPrivateData.js')
     this.hasPrivateSignalKeys = require('./methods/hasPrivateSignalKeys.js')
+    this.hasUserData = require('./methods/hasUserData.js')
+    this.setUserData = require('./methods/setUserData.js')
+    this.getUserData = require('./methods/getUserData.js')
     this.hasSession = require('./methods/hasSession.js')
 
     /**
@@ -88,6 +94,7 @@ function WhatsDappNodeStorage(opts) {
     // privates
     this._saveMetaData = require('./methods/saveMetaData.js')
     this._savePrivateData = require('./methods/savePrivateData.js')
+    this._saveUserData = require('./methods/saveUserData.js')
     this._insertMessageToChunk = require('./methods/insertMessageToChunk.js')
     this._reorganizeHistory = require('./methods/reorganizeHistory.js')
 

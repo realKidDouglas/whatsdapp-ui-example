@@ -26,11 +26,27 @@ module.exports = function (opts) {
     }
 
     async function handleConnect(evt, options) {
-        const {mnemonic} = options
+        const {password} = options
         storage = new WhatsDappNodeStorage({
-            password: mnemonic,
+            password: password,
             storagePath
         })
+
+        // create new account or just login with saved credentials?
+        if(!options.mnemonic) {
+            if(await storage.hasUserData()) {
+                let usr = await storage.getUserData();
+                options.mnemonic = usr.mnemonic;
+                options.identity = usr.identityAddr;
+                options.createDpnsName = null;
+                options.displayname = usr.displayName;
+            }
+            else {
+                console.error("Can't Connect! No mnemonic provided and no saved user data");
+                return null;
+            }
+        } //TODO: Else: Delete storage, create a new one?
+
         signal = new SignalWrapper()
         messenger = new WhatsDapp();
         if (!await storage.hasPrivateSignalKeys()) {
@@ -71,7 +87,27 @@ module.exports = function (opts) {
         })
 
         const lastTimestamp = await storage.getLastTimestamp();
-        return messenger.connect(Object.assign({}, options, {sessions: contacts, lastTimestamp}));
+        const connectResult = await messenger.connect(Object.assign({}, options, {sessions: contacts, lastTimestamp}));
+        
+        //Connection successful, now we can save the used/generated user data, if new
+        //TODO: save always?
+        if(!await storage.hasUserData()) {
+            let newUsr = {
+                mnemonic: options.mnemonic,
+                displayName: options.displayname,
+                identityAddr: connectResult.identity,
+                dpnsName: connectResult.createDpnsName
+            }
+            await storage.setUserData(newUsr);
+        }
+
+        if(options.createDpnsName && !connectResult.createDpnsName) {
+            //user wanted to register a DPNS name, but it didn't work
+            //Stop polling because UI will try to reconnect later with new DPNS name
+            messenger.disconnect(); //TODO: Doesn't work?
+        }
+
+        return connectResult;
     }
 
     //login handling

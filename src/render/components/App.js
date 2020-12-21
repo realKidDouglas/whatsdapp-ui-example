@@ -13,14 +13,17 @@ class App extends Component {
 
     setLoggedInUser = user => {
         this.setState({loggedInUser: user})
+        console.log('GUI: Log in!');
+        console.log(user);
     }
 
     render() {
         if (this.state.loggedInUser) {
             return (
-                <CssBaseline>
+                <React.Fragment>
+                    <CssBaseline/>
                     <Chat loggedInUser={this.state.loggedInUser}/>
-                </CssBaseline>
+                </React.Fragment>
             )
         } else {
             return (
