@@ -38,14 +38,14 @@ module.exports = function (opts) {
                 let usr = await storage.getUserData();
                 options.mnemonic = usr.mnemonic;
                 options.identity = usr.identityAddr;
-                options.dpnsName = usr.dpnsName;
+                options.createDpnsName = null;
                 options.displayname = usr.displayName;
             }
             else {
                 console.error("Can't Connect! No mnemonic provided and no saved user data");
                 return null;
             }
-        } //TODO: Else: Lösche storage, erzeuge neuen
+        } //TODO: Else: Delete storage, create a new one?
 
         signal = new SignalWrapper()
         messenger = new WhatsDapp();
@@ -90,14 +90,21 @@ module.exports = function (opts) {
         const connectResult = await messenger.connect(Object.assign({}, options, {sessions: contacts, lastTimestamp}));
         
         //Connection successful, now we can save the used/generated user data, if new
+        //TODO: save always?
         if(!await storage.hasUserData()) {
             let newUsr = {
                 mnemonic: options.mnemonic,
                 displayName: options.displayname,
                 identityAddr: connectResult.identity,
-                dpnsName: options.dpnsName
+                dpnsName: connectResult.createDpnsName
             }
             await storage.setUserData(newUsr);
+        }
+
+        if(options.createDpnsName && !connectResult.createDpnsName) {
+            //user wanted to register a DPNS name, but it didn't work
+            //Stop polling because UI will try to reconnect later with new DPNS name
+            messenger.disconnect(); //TODO: Doesn't work?
         }
 
         return connectResult;

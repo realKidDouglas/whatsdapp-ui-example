@@ -36,7 +36,9 @@ class LoginForm extends React.Component {
       loginTypeInfo: "Log in with the existing WhatsDapp profile on this device!",
       provideIdentityAddr: false,
       identityAddr: '',
-      loading: false
+      loading: false,
+      dpnsError: false,
+      loginError: false
     }
   }
 
@@ -93,7 +95,7 @@ class LoginForm extends React.Component {
     let options = {
       mnemonic: (this.state.mnemonic === "" ? null : this.state.mnemonic),
       identity: (this.state.identityAddr === "" ? null : this.state.identityAddr),
-      dpnsName: (this.state.dpnsName === "" ? null : this.state.dpnsName),
+      createDpnsName: (this.state.dpnsName === "" ? null : this.state.dpnsName),
       displayname: (this.state.displayName === "" ? this.state.dpnsName : this.state.displayName),
       password: (this.state.password === "" ? null : this.state.password)
     }
@@ -104,11 +106,27 @@ class LoginForm extends React.Component {
     catch (e) {
       console.error(e)
     }
-    this.setState({loading: false});
+    this.setState({
+      loading: false,
+      dpnsError: false,
+      loginError: false
+    });
+
     if (user) {
-      this.props.setLoggedInUser(user)
+      if (user.createDpnsName || this.state.dpnsName === "") {
+        //dpns registration successfull or user doesn't want to register a name
+        this.props.setLoggedInUser(user)
+      }
+      else {
+        //identity was created but dpns name could not be registered
+        this.setState({
+          identityAddr: user.identity,
+          dpnsError: true
+        });
+      }
     } else {
       console.error("GUI: Log in of user failed")
+      this.setState({loginError: true});
     }
   }
 
@@ -128,9 +146,10 @@ class LoginForm extends React.Component {
             <Typography variant="body2">{this.state.loginTypeInfo}</Typography>
           </FormControl>
         </Paper>
+        {/*--------- Login form -----------*/}
         <Paper hidden={this.state.loginType !== "login"} elevation={2} className={classes.loginPaper}>
           <form spellCheck="false" noValidate autoComplete="off" onSubmit={this.onLogin}>
-            <FormControl size="small" variant="filled" fullWidth className={classes.textField} >
+            <FormControl size="small" variant="filled" fullWidth className={classes.textField} error={this.state.loginError}>
               <InputLabel htmlFor="login-password">Password</InputLabel>
               <FilledInput
                 id="login-password"
@@ -150,6 +169,7 @@ class LoginForm extends React.Component {
                   </InputAdornment>
                 }
               />
+              {this.state.loginError && <FormHelperText id="component-error-text">Wrong password or no account registered on this device!</FormHelperText>}
             </FormControl>
             <Button fullWidth type="submit" variant="contained" color="primary"
               endIcon={this.state.loading ? <CircularProgress color="inherit" size={22}/> : <LockOpenIcon />}>
@@ -157,6 +177,7 @@ class LoginForm extends React.Component {
             </Button>
           </form>
         </Paper>
+        {/*--------- Register form -----------*/}
         <Paper hidden={this.state.loginType !== "register"} elevation={2} className={classes.loginPaper}>
           <form spellCheck="false" noValidate autoComplete="off" onSubmit={this.onRegister}>
             <TextField
@@ -177,7 +198,8 @@ class LoginForm extends React.Component {
               value={this.state.identityAddr} onChange={this.onIdentityAddrChange} variant="filled" size="small" fullWidth />
             <TextField
               label="Username"
-              helperText="Your unique username, with which your contacts can find you."
+              helperText="Your unique username, with which your contacts can find you. If you use a custom identity and already registered a DPNS name for it you can leave this empty. If the name is already taken this shows an error."
+              error={this.state.dpnsError}
               value={this.state.dpnsName} onChange={this.onDpnsNameChange} required className={classes.textField} variant="filled" size="small" fullWidth />
             <TextField
               label="Display Name"
@@ -211,7 +233,7 @@ class LoginForm extends React.Component {
               endIcon={this.state.loading ? <CircularProgress color="inherit" size={22}/> : <BackupIcon/> }>
               Create Profile
             </Button>
-            {this.state.loading && <FormHelperText>This can take some time.</FormHelperText>}
+            {this.state.loading && <FormHelperText>This can take several minutes.</FormHelperText>}
           </form>
         </Paper>
       </Container>
