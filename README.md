@@ -10,7 +10,7 @@ Reference chat GUI implementation for the [WhatsDapp](https://github.com/realKid
 - [Install](#install)
   * [Installing the WhatsDapp library](#installing-the-whatsdapp-library)
   * [Installing GUI-Prototype (whatsdapp-ui-example)](#installing-gui-prototype--whatsdapp-ui-example-)
-- [Login](#login)
+- [Registration and Login](#registration-and-login)
 - [Troubleshooting](#troubleshooting)
   * [You cannot write to yourself](#you-cannot-write-to-yourself)
   * [Burned Identities](#burned-identities)
@@ -23,17 +23,19 @@ Reference chat GUI implementation for the [WhatsDapp](https://github.com/realKid
  - node v12+
  - npm v6+
 
-Also you need a Dash Identity with some credits. Herefore you can go through these steps/tutorials:
+Also you need a mnemonic with some eDash. 
+Herefore you can go through these steps/tutorials:
  1. [Create and Fund a Wallet](https://dashplatform.readme.io/docs/tutorial-create-and-fund-a-wallet): Getting a HD-Wallet with mnemonic.
  2. Get some and some eDash from [faucet](http://faucet.evonet.networks.dash.org) and wait a few minutes until it's mined.
- 3. [Register an Identity](https://dashplatform.readme.io/docs/tutorial-register-an-identity) and
- 4. [Topup an Identity's Balance](https://dashplatform.readme.io/docs/tutorial-topup-an-identity-balance): 
+ 
+WhatsDapp creates and tops up an Identity and optionally registers a DPNS name for you automatically in the [registration tab](#registration-and-login).
+But you can use your existing ones or create on your own by following these tutorials.
+
+ 1. [Register an Identity](https://dashplatform.readme.io/docs/tutorial-register-an-identity) and
+ 2. [Topup an Identity's Balance](https://dashplatform.readme.io/docs/tutorial-topup-an-identity-balance): 
  	So you will be able to write to the Dash Drive.
- 5. [Register a Name for an Identity](https://dashplatform.readme.io/docs/tutorial-register-a-name-for-an-identity): 
+ 3. [Register a Name for an Identity](https://dashplatform.readme.io/docs/tutorial-register-a-name-for-an-identity): 
  	This way you can be found by others in the messenger.
-
-We will need the **mnemonic** and the **identity** for whatsdapping.
-
 
 # Install
 
@@ -92,22 +94,35 @@ Chrome Dev Tools can be opened by pressing F12 (check if enableDevTools = true i
 Sometimes the node process is not killed properly, consumes CPU and blocks used port. 
 Find it by `ps aux | grep node` and `kill` corresponding PID.
 
-# Login
+# Registration and Login
 
-Type in your **mnemonic** and **identity** (be careful to type in correctly. There is currently no plausibility-check).
-The **displayname** is can be same as your DPNS but doesn't have to. 
-It will be used later for displaying contacts/messages.
+On first start use the Registration tab and type in your mnemonic.
 
-Be patient... Your WhatsDapp profile will be created and uploaded containing your key-bundles for session-setup.
+If you want to use an *existing identity* check "Custom Identity Address" and type in identity.
+If this identity already has a DPNS name leave "Username" empty.
+
+If you want WhatsDapp to create an identity for you just type in your wish-DPNS name in "Username".
+WhatsDapp will follow the Dash tutorials mentioned above and creates an identity, tops up with 1000 duffs and registers the DPNS name.
+
+The "Display Name" can be same as your DPNS but doesn't have to. 
+This is your WhatsDapp internal name.
+It will be used for displaying contacts/messages.
+
+The "Password" is used to encrypt your local storage. 
+So the next time you use WhatsDapp, you'll only have to type this password to login.
+
+Be patient... 
+Your WhatsDapp profile will be created and uploaded containing your key-bundles for session-setup.
 
 You'll be forwarded to a message window.
-Here you can search for a DPNS name and add to your conversations (receiver also needs to upload a WhatDapp profile in first place, too). 
+Here you can search for a DPNS name and add to your conversations (receiver also needs to upload a WhatsDapp profile in first place, too). 
 
 Now start secure chatting over the blockchain ;)
-Be patient again. Sent messages will be shown *after* they arrived at the blockchain implying success.
+Be patient again... 
+Sent messages will be shown *after* they arrived at the blockchain implying success.
 
 If you're interested in, you can find your encrypted messages with the [Dash Platform Explorer](https://pce.cloudwheels.net).
-You can find our contract containing `receiverId`, timestamps and content of yor messages.
+You can find our contract containing `receiverId`, timestamps and content of your messages.
 The content is a base64 encoded JSON-object containing signal-encrypted message.
 
 # Troubleshooting
