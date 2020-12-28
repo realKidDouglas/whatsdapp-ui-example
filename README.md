@@ -24,8 +24,10 @@ Reference chat GUI implementation for the [WhatsDapp](https://github.com/realKid
  - npm v6+
 
 Also you need a mnemonic with some eDash. 
-Herefore you can go through these steps/tutorials:
- 1. [Create and Fund a Wallet](https://dashplatform.readme.io/docs/tutorial-create-and-fund-a-wallet): Getting a HD-Wallet with mnemonic.
+Herefore you can go through these steps:
+ 1. Getting a HD-Wallet with mnemonic you
+    - either follow this tutorial: [Create and Fund a Wallet](https://dashplatform.readme.io/docs/tutorial-create-and-fund-a-wallet).
+    - or easily create and manage wallet with [EvoWallet](http://evowallet.io) or [Chrome Wallet](https://github.com/readme55/Dash-Chrome-Wallet).
  2. Get some and some eDash from [faucet](http://faucet.evonet.networks.dash.org) and wait a few minutes until it's mined.
  
 WhatsDapp creates and tops up an Identity and optionally registers a DPNS name for you automatically in the [registration tab](#registration-and-login).
