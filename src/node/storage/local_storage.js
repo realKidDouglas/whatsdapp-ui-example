@@ -47,7 +47,6 @@ class LocalStorage {
         } catch (e) {
             console.log("could not find value for key", e);
         }
-        console.log("get", key);
         return ret;
     }
 
@@ -57,7 +56,6 @@ class LocalStorage {
      * @param value {Uint8Array}
      */
     set(key, value) {
-        console.log("set", key, value + "");
         const hashedKey = getStorageKeyHash(key, this._salt);
         if (value == null) {
             this._delete(hashedKey);

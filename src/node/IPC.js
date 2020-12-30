@@ -81,6 +81,9 @@ module.exports = function (opts) {
                 console.log(msg);
                 messenger._deleteMessages(messenger._getDeleteTimeFromContent(msg.content), msg.senderHandle);
             }
+            // TODO: this can be done from inside the WhatsDapp lib when
+            // TODO: the decryption happens in there too
+            await storage.addMessageToSession(session.profile_name, msg);
             sendMessageToWebContents(window, 'new-message', [msg, session]);
         })
 
