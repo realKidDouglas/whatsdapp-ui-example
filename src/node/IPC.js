@@ -1,5 +1,5 @@
-const WhatsDappNodeStorage = require("./storage/storage");
-const {WhatsDapp, SignalWrapper} = require('whatsdapp');
+const LocalStorage = require("./storage/local_storage");
+const {WhatsDapp, SignalWrapper, WhatsDappEvent} = require('whatsdapp');
 const {ipcMain} = require('electron');
 
 /**
@@ -9,7 +9,7 @@ const {ipcMain} = require('electron');
  */
 module.exports = function (opts) {
     const {window, storagePath} = opts;
-    let storage;
+    let localStorage;
     let messenger;
     let signal;
 
@@ -27,29 +27,30 @@ module.exports = function (opts) {
 
     async function handleConnect(evt, options) {
         const {password} = options
-        storage = new WhatsDappNodeStorage({
-            password: password,
-            storagePath
-        })
+        localStorage = new LocalStorage({password, storagePath})
+        messenger = new WhatsDapp();
+        messenger.on(WhatsDappEvent.StorageRead, (key, ret) => localStorage.get(key).then(value => ret(value)))
+        messenger.on(WhatsDappEvent.StorageWrite, (key, value) => localStorage.set(key, value))
+        messenger.on(WhatsDappEvent.StorageDelete, key => localStorage.set(key, null))
+        const storage = messenger.storage;
 
         // create new account or just login with saved credentials?
-        if(!options.mnemonic) {
-            if(await storage.hasUserData()) {
+        if (!options.mnemonic) {
+            if (await storage.hasUserData()) {
                 let usr = await storage.getUserData();
                 options.mnemonic = usr.mnemonic;
                 options.identity = usr.identityAddr;
                 options.createDpnsName = null;
                 options.displayname = usr.displayName;
-            }
-            else {
+            } else {
                 console.error("Can't Connect! No mnemonic provided and no saved user data");
                 return null;
             }
         } //TODO: Else: Delete storage, create a new one?
 
-        signal = new SignalWrapper()
-        messenger = new WhatsDapp();
-        if (!await storage.hasPrivateSignalKeys()) {
+        signal = new SignalWrapper();
+        const hasPrivateData = await storage.hasPrivateData();
+        if (!hasPrivateData) {
             const keys = await signal.generateSignalKeys()
             await storage.setPrivateData(keys.private)
             options.preKeyBundle = keys.preKeyBundle
@@ -57,7 +58,7 @@ module.exports = function (opts) {
         const sessionIds = await storage.getSessions()
         const contacts = sessionIds.map(si => ({profile_name: si}))
 
-        messenger.on('new-session', async (session, preKeyBundle) => {
+        messenger.on(WhatsDappEvent.NewSession, async (session, preKeyBundle) => {
             console.log("new session", session)
 
             /* TODO: This is only necessary when a new session is established by searching a contact.
@@ -69,7 +70,7 @@ module.exports = function (opts) {
             sendMessageToWebContents(window, 'new-session', [session])
         })
 
-        messenger.on('new-message', async (msg, session, sentByUs) => {
+        messenger.on(WhatsDappEvent.NewMessage, async (msg, session, sentByUs) => {
             if (!sentByUs) {
                 msg.content = await signal.decryptMessage(storage, msg.ownerId, msg.content)
                 msg.content.message = messenger._getMessageFromContent(msg.content);
@@ -80,23 +81,23 @@ module.exports = function (opts) {
                 console.log(msg);
                 messenger._deleteMessages(messenger._getDeleteTimeFromContent(msg.content), msg.senderHandle);
             }
-            storage.addMessageToSession(session.profile_name, msg)
-                .catch(e => console.log('add message fail:', e));
+            // TODO: this can be done from inside the WhatsDapp lib when
+            // TODO: the decryption happens in there too
+            await storage.addMessageToSession(session.profile_name, msg);
             sendMessageToWebContents(window, 'new-message', [msg, session]);
         })
 
-        messenger.on('new-message-sent', async (msg, session) => {
-            storage.addMessageToSession(session.profile_name, msg)
-                .catch(e => console.log('add message fail:', e));
+        messenger.on(WhatsDappEvent.NewMessageSent, async (msg, session) => {
             sendMessageToWebContents(window, 'new-message', [msg, session]);
         })
 
         const lastTimestamp = await storage.getLastTimestamp();
         const connectResult = await messenger.connect(Object.assign({}, options, {sessions: contacts, lastTimestamp}));
-        
+
         //Connection successful, now we can save the used/generated user data, if new
         //TODO: save always?
-        if(!await storage.hasUserData()) {
+        const hasUserData = await storage.hasUserData();
+        if (!hasUserData) {
             let newUsr = {
                 mnemonic: options.mnemonic,
                 displayName: options.displayname,
@@ -106,7 +107,7 @@ module.exports = function (opts) {
             await storage.setUserData(newUsr);
         }
 
-        if(options.createDpnsName && !connectResult.createDpnsName) {
+        if (options.createDpnsName && !connectResult.createDpnsName) {
             //user wanted to register a DPNS name, but it didn't work
             //Stop polling because UI will try to reconnect later with new DPNS name
             messenger.disconnect(); //TODO: Doesn't work?
@@ -132,19 +133,19 @@ module.exports = function (opts) {
         const inputText = messenger.createInputMessage(plaintext);
         console.log("INPUTTEXT");
         console.log(inputText);
-        const ciphertext = await signal.encryptMessage(storage, receiver, inputText)
+        const ciphertext = await signal.encryptMessage(messenger.storage, receiver, inputText)
         return messenger.sendMessage(receiver, ciphertext, inputText);
     });
 
     ipcMain.handle('get-chat-history', async (event, contact) => {
         // TODO: make more args available, getPreviousMessages
         // TODO: can be used to get any part of the history.
-        const msg = await Promise.all(storage.getPreviousMessages(contact.profile_name));
+        const msg = await messenger.storage.getPreviousMessages(contact.profile_name);
         return msg.filter(m => m != null);
     });
 
     ipcMain.handle('findcontact', async (event, dpnsname) => {
         const session = await messenger.getProfileByName(dpnsname);
         return session; // TODO: shouldn't return a session
-      });
+    });
 }

@@ -1,41 +1,39 @@
 const crypto = require('crypto')
 const fs = require('fs-extra')
 const path = require('path')
-const {SALT_FILE_NAME, IV_LENGTH, ALGO, TAG_LENGTH, SALT_LENGTH} = require('./constants')
+const {SALT_FILE_NAME, IV_LENGTH, ALGO, TAG_LENGTH, SALT_LENGTH} = require('./local_storage_constants')
 
 /**
- * decrypt a buffer and parse js object
+ * decrypt a Uint8Array
  * @param buf {Buffer}
  * @param key {Buffer}
- * @returns {?object}
+ * @returns {Uint8Array | null}
  */
-function aesDecryptObject(buf, key) {
+function aesDecryptUint8Array(buf, key) {
     try {
         const iv = buf.slice(0, IV_LENGTH)
         const tag = buf.slice(IV_LENGTH, IV_LENGTH + TAG_LENGTH)
         const ct = buf.slice(IV_LENGTH + TAG_LENGTH)
         const decipher = crypto.createDecipheriv(ALGO, key, iv, {authTagLength: TAG_LENGTH})
         decipher.setAuthTag(tag)
-        let plain = decipher.update(ct, null, 'utf8')
-        plain += decipher.final('utf8')
-        return JSON.parse(plain)
+        return Buffer.concat([decipher.update(ct), decipher.final()])
     } catch (e) {
-        console.log('could not decipher object!', e)
+        console.log('could not decipher array!', e)
         return null
     }
 }
 
 /**
- * encrypt a js object into a buffer
- * @param obj {object}
+ * encrypt a Uint8Array
+ * @param arr {Uint8Array}
  * @param key {Buffer}
  * @returns {Buffer} iv | authTag | ciphertext
  */
-function aesEncryptObject(obj, key) {
+function aesEncryptUint8Array(arr, key) {
     const iv = crypto.randomBytes(IV_LENGTH)
     const cipher = crypto.createCipheriv(ALGO, key, iv)
     const ctBuffers = []
-    ctBuffers.push(cipher.update(JSON.stringify(obj), 'utf8'))
+    ctBuffers.push(cipher.update(Buffer.from(arr)))
     ctBuffers.push(cipher.final())
     const tag = cipher.getAuthTag()
     return Buffer.concat([iv, tag].concat(ctBuffers))
@@ -72,14 +70,14 @@ function getKey(password, saltBuffer) {
 /**
  * fairly high cost is desired so if the storage gets leaked,
  * it's not easy to find out who we talked to by looking at the
- * directory names.
- * @param identityId
+ * file names.
+ * @param storageKey {string}
  * @param saltBuffer {Buffer} salt used for the scrypt hash
- * @returns {string}
+ * @returns {string} hex encoded hash
  */
-function getIdentityIDHash(identityId, saltBuffer) {
+function getStorageKeyHash(storageKey, saltBuffer) {
     // if(typeof input !== 'string' || input.length !== X) throw new Error('invalid identity id')
-    return crypto.scryptSync(identityId, saltBuffer, 16, {
+    return crypto.scryptSync(storageKey, saltBuffer, 16, {
         cost: 16384, // default
         blockSize: 8, // default
         parallelization: 1, // default
@@ -88,9 +86,9 @@ function getIdentityIDHash(identityId, saltBuffer) {
 }
 
 module.exports = {
-    aesDecryptObject,
-    aesEncryptObject,
     getSalt,
     getKey,
-    getIdentityIDHash
+    getStorageKeyHash,
+    aesDecryptUint8Array,
+    aesEncryptUint8Array,
 }
