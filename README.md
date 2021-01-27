@@ -1,4 +1,4 @@
-<img src="/whatsDapp.png" width="100" height="100">
+<img src="/images/whatsDapp.png" width="100" height="100">
 
 # WhatsDapp UI Example
 
@@ -99,6 +99,10 @@ Find it by `ps aux | grep node` and `kill` corresponding PID.
 # Registration and Login
 
 On first start use the Registration tab and type in your mnemonic.
+
+<details><summary>Show registration screenshot</summary>
+	<img src="/images/whatsDapp_registration.png">
+</details>
 
 If you want to use an *existing identity* check "Custom Identity Address" and type in identity.
 If this identity already has a DPNS name leave "Username" empty.
