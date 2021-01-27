@@ -117,6 +117,10 @@ It will be used for displaying contacts/messages.
 The "Password" is used to encrypt your local storage. 
 So the next time you use WhatsDapp, you'll only have to type this password to login.
 
+<details><summary>Show login screenshot</summary>
+	<img src="/images/whatsDapp_login.png">
+</details>
+
 Be patient... 
 Your WhatsDapp profile will be created and uploaded containing your key-bundles for session-setup.
 
@@ -126,6 +130,10 @@ Here you can search for a DPNS name and add to your conversations (receiver also
 Now start secure chatting over the blockchain ;)
 Be patient again... 
 Sent messages will be shown *after* they arrived at the blockchain implying success.
+
+<details><summary>Show chat screenshot</summary>
+	<img src="/images/whatsDapp_chat.png">
+</details>
 
 If you're interested in, you can find your encrypted messages with the [Dash Platform Explorer](https://pce.cloudwheels.net).
 You can find our contract containing `receiverId`, timestamps and content of your messages.
