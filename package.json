@@ -15,7 +15,6 @@
     "electron-localshortcut": "3.2.1",
     "fontsource-roboto": "^3.0.3",
     "fs-extra": "9.0.1",
-    "grpc": "^1.24.4",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "whatsdapp": "./whatsdapp-lib"
