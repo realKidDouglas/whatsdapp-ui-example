@@ -15,6 +15,7 @@ Reference chat GUI implementation for the [WhatsDapp](https://github.com/realKid
   * [You cannot write to yourself](#you-cannot-write-to-yourself)
   * [Burned Identities](#burned-identities)
   * [Reset Local Storage](#reset-local-storage)
+  * [High CPU Usage on macOS](#high-cpu-usage-on-macos)
   * [Foreman on macOS](#foreman-on-macos)
 - [Sources](#sources)
 
@@ -23,12 +24,12 @@ Reference chat GUI implementation for the [WhatsDapp](https://github.com/realKid
  - node v12+
  - npm v6+
 
-Also you need a mnemonic with some eDash. 
+Also you need a mnemonic with some tDash. 
 Herefore you can go through these steps:
  1. Getting a HD-Wallet with mnemonic you
     - either follow this tutorial: [Create and Fund a Wallet](https://dashplatform.readme.io/docs/tutorial-create-and-fund-a-wallet).
     - or easily create and manage wallet with [EvoWallet](http://evowallet.io) or [Chrome Wallet](https://github.com/readme55/Dash-Chrome-Wallet).
- 2. Get some eDash from [faucet](http://faucet.evonet.networks.dash.org) and wait a few minutes until it's mined.
+ 2. Get some tDash from [faucet](https://testnet-faucet.dash.org) and wait a few minutes until it's mined.
  
 WhatsDapp creates and tops up an Identity and optionally registers a DPNS name for you automatically in the [registration tab](#registration-and-login).
 But you can use your existing ones or create on your own by following these tutorials.
@@ -60,14 +61,14 @@ Clone WhatsDapp-Lib:
 Install:
 
     cd whatsdapp-lib
-    npm install
+    npm ci
     npm rebuild grpc --runtime=electron --target=v10.1.4
     npm run dist
 
 In case of error redo easily with:
 
-    rm -rf node_modules dist package-lock.json && \
-        npm install && \
+    rm -rf node_modules dist && \
+        npm ci && \
         npm rebuild grpc --runtime=electron --target=v10.1.4 && \
         npm run dist
 
@@ -77,14 +78,14 @@ In case of error redo easily with:
 
 Install:
 
-    npm install
-    npm install grpc --runtime=electron --target=v10.1.4
+    npm ci
+    npm ci grpc --runtime=electron --target=v10.1.4
     
 In case of error redo easily with:
     
-    rm -rf node_modules package-lock.json && \
-        npm install && \
-        npm install grpc --runtime=electron --target=v10.1.4
+    rm -rf node_modules && \
+        npm ci && \
+        npm ci grpc --runtime=electron --target=v10.1.4
 
 Run messeger:
 
@@ -164,6 +165,18 @@ Linux: `"~/.config/whatsdapp-ui-example"`
 macOs: `"~/Library/Application Support/whatsdapp-ui-example"`
 
 Windows: `"%AppData%/whatsdapp-ui-example"`
+
+
+## High CPU Usage on macOS
+It occurs that Electron and consequently WhatsDapp consumes one CPU to 100% even if nothing seems to happen.
+This leads back to file-watching issue of `node.js`.
+A better notification-service is implemented in [`FSEvents`](https://www.npmjs.com/package/fsevents).
+
+In WhatsDapp-UI folder run:
+	npm install fsevents
+
+A bit more info [here](https://til.codes/fix-for-100-cpu-usage-by-nodejs/).
+
 
 ## Foreman on macOS
 There is a issue on foreman for macOS, more information [here](https://stackoverflow.com/questions/45422184/heroku-local-on-exit-null-throws-err-unknown-signal-error/49716045#49716045).
