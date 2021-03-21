@@ -24,7 +24,7 @@ Reference chat GUI implementation for the [WhatsDapp](https://github.com/realKid
  - node v12+
  - npm v6+
 
-Also you need a mnemonic with some tDash. 
+Also you need a mnemonic with some tDash (v0.18). 
 Herefore you can go through these steps:
  1. Getting a HD-Wallet with mnemonic you
     - either follow this tutorial: [Create and Fund a Wallet](https://dashplatform.readme.io/docs/tutorial-create-and-fund-a-wallet).
@@ -173,6 +173,7 @@ This leads back to file-watching issue of `node.js`.
 A better notification-service is implemented in [`FSEvents`](https://www.npmjs.com/package/fsevents).
 
 In WhatsDapp-UI folder run:
+
 	npm install fsevents
 
 A bit more info [here](https://til.codes/fix-for-100-cpu-usage-by-nodejs/).
