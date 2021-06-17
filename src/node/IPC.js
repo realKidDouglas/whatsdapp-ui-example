@@ -1,5 +1,5 @@
 const LocalStorage = require("./storage/local_storage");
-const {WhatsDapp, SignalWrapper, WhatsDappEvent} = require('whatsdapp');
+const {WhatsDapp, WhatsDappEvent} = require('whatsdapp');
 const {ipcMain} = require('electron');
 
 /**
@@ -11,7 +11,6 @@ module.exports = function (opts) {
     const {window, storagePath} = opts;
     let localStorage;
     let messenger;
-    let signal;
 
     function sendMessageToWebContents(window, message, args) {
         if (!window || window.isDestroyed()) {
@@ -48,11 +47,9 @@ module.exports = function (opts) {
             }
         } //TODO: Else: Delete storage, create a new one?
 
-        signal = new SignalWrapper();
         const hasPrivateData = await storage.hasPrivateData();
         if (!hasPrivateData) {
-            const keys = await signal.generateSignalKeys()
-            await storage.setPrivateData(keys.private)
+            const keys = await messenger.createKeys();
             options.preKeyBundle = keys.preKeyBundle
         }
         const sessionIds = await storage.getSessions()
@@ -61,29 +58,11 @@ module.exports = function (opts) {
         messenger.on(WhatsDappEvent.NewSession, async (session, preKeyBundle) => {
             console.log("new session", session)
 
-            /* TODO: This is only necessary when a new session is established by searching a contact.
-            If a session is established by a new incoming message, this is a waste of time, since the
-            signal lib will tear it down and rebuild it, because buildAndPersistSession establishes an
-            outgoing session. Incoming sessions are created by the signal lib and don't require explicit
-            session establishment by us. */
-            await signal.buildAndPersistSession(storage, session.profile_name, preKeyBundle)
             sendMessageToWebContents(window, 'new-session', [session])
         })
 
         messenger.on(WhatsDappEvent.NewMessage, async (msg, session, sentByUs) => {
-            if (!sentByUs) {
-                msg.content = await signal.decryptMessage(storage, msg.ownerId, msg.content)
-                msg.content.message = messenger._getMessageFromContent(msg.content);
-                msg.content.deleteTime = messenger._getDeleteTimeFromContent(msg.content);
-                console.log("receiverid");
-                console.log(msg.senderHandle);
-                console.log("MSG");
-                console.log(msg);
-                messenger._deleteMessages(messenger._getDeleteTimeFromContent(msg.content), msg.senderHandle);
-            }
-            // TODO: this can be done from inside the WhatsDapp lib when
-            // TODO: the decryption happens in there too
-            await storage.addMessageToSession(session.profile_name, msg);
+            messenger._deleteMessages(messenger._getDeleteTimeFromContent(msg.content), msg.senderHandle);
             sendMessageToWebContents(window, 'new-message', [msg, session]);
         })
 
@@ -133,8 +112,7 @@ module.exports = function (opts) {
         const inputText = messenger.createInputMessage(plaintext);
         console.log("INPUTTEXT");
         console.log(inputText);
-        const ciphertext = await signal.encryptMessage(messenger.storage, receiver, inputText)
-        return messenger.sendMessage(receiver, ciphertext, inputText);
+        return messenger.sendMessage(receiver, inputText);
     });
 
     ipcMain.handle('get-chat-history', async (event, contact) => {
