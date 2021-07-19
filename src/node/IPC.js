@@ -61,7 +61,7 @@ module.exports = function (opts) {
             sendMessageToWebContents(window, 'new-session', [session])
         })
 
-        messenger.on(WhatsDappEvent.NewMessage, async (msg, session, sentByUs) => {
+        messenger.on(WhatsDappEvent.NewMessage, async (msg, session) => {
             messenger._deleteMessages(messenger._getDeleteTimeFromContent(msg.content), msg.senderHandle);
             sendMessageToWebContents(window, 'new-message', [msg, session]);
         })
